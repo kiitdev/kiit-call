@@ -81,8 +81,7 @@ Pass them as `-P` flags because dots in the property names are not valid bash va
 
 ## CI — GitHub Actions
 
-<!-- TODO: this describes a two-workflow setup (CI + manual Release). This template only ships
-     ci.yml — add release.yml once this module is ready to publish, following the same shape. -->
+Two workflows live under [`.github/workflows`](.github/workflows):
 
 | Workflow | File | Trigger | What it does |
 |----------|------|---------|---------------|
