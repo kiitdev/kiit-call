@@ -74,7 +74,7 @@ See [`samples/sample-kotlin`](./samples/sample-kotlin) for a runnable end-to-end
 | Term | What it is |
 |---|---|
 | **`Identity`** | `company.area.service.agent.env.instance` structural identifier for a service/component. Every field lands in `name`/`full`/`id`, dot-joined, so it's stable and log-friendly. |
-| **`Agent`** | What kind of thing has this identity: `App`, `CLI`, `Web`, `API`, `Bot`, `Job`, `Cmd`, `Svc`, `Test`. A closed set, a real enum, no runtime-extensible case. |
+| **`Agent`** | What kind of runnable app or service has this identity: `App`, `CLI`, `Web`, `API`, `Bot`, `Job`, `Svc`, `Test`. A closed set, a real enum, no runtime-extensible case. |
 | **`About`** | Human-readable app description (name, desc, url, contact, tags), with `toId()` converting it into the equivalent `Identity`. |
 
 `Identity.env` is a plain `String`, not a typed enum. kiit-call has no dependency on the environment-selection module (`kiit-conf-envs`), since `Identity` is needed well beyond env-aware bootstrap code, so callers pass whatever env label they're already using.
