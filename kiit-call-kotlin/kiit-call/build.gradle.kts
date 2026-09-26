@@ -90,8 +90,8 @@ mavenPublishing {
     )
     pom {
         name = "kiit-call"
-        description = "Identity, source, and app-description types for who/what/how a call or " +
-            "running instance is associated with - Kotlin Multiplatform."
+        description = "Identity and app-description types for which service or running instance " +
+            "something is associated with - Kotlin Multiplatform."
         url = "https://kiit.dev"
         licenses {
             license {
