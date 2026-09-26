@@ -1,0 +1,26 @@
+build:
+  maxIssues: 0
+
+config:
+  validation: true
+  warningsAsErrors: false
+
+style:
+  MaxLineLength:
+    maxLineLength: 120
+  WildcardImport:
+    active: true
+  ReturnCount:
+    max: 6               # guard-clause early returns are idiomatic; default of 2 is too strict
+  ForbiddenComment:
+    active: false        # TODOs in KDoc are used as design notes, not untracked work
+  MagicNumber:
+    ignoreEnums: true     # Agent's App(0)/CLI(1)/... are each already named by their own enum
+                           # constant, not unexplained literals in logic.
+
+complexity:
+  LongParameterList:
+    # Identity.of() takes one parameter per Identity field that isn't purely derived, by design,
+    # so app()/api()/cli()/job()/test() can stay thin wrappers over one real builder instead of
+    # each duplicating construction logic.
+    functionThreshold: 10
