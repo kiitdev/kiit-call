@@ -1,5 +1,5 @@
 // Root aggregator, no dependencies of its own.
-// The library lives in :kiit-call, demo apps live under :samples.
+// The library lives in :kiit-identity, demo apps live under :samples.
 plugins {
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.serialization) apply false

@@ -12,7 +12,7 @@ application {
 }
 
 dependencies {
-    // kiit-call has no serialization surface and no suspend functions, so nothing beyond
+    // kiit-identity has no serialization surface and no suspend functions, so nothing beyond
     // the module itself is needed.
-    implementation(project(":kiit-call"))
+    implementation(project(":kiit-identity"))
 }

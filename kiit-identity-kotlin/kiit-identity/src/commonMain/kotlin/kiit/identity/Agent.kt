@@ -1,4 +1,4 @@
-package kiit.call
+package kiit.identity
 
 /**
  * The kind of runnable/executable app or service an [Identity] represents. A closed, fixed set,

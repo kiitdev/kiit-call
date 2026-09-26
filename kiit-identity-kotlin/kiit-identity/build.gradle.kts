@@ -13,7 +13,7 @@ plugins {
 // Single source of truth for the published version, mirroring every other kiit module. Left as
 // a placeholder: the starting version and first publish target (GitHub Packages pre-release vs.
 // Maven Central stable) are the module owner's call, not something to lock in during scaffolding.
-val libraryVersion = "0.0.0"
+val libraryVersion = "0.8.0"
 
 kotlin {
     jvm {
@@ -33,16 +33,16 @@ kotlin {
 
     listOf(iosArm64(), iosSimulatorArm64(), iosX64()).forEach {
         it.binaries.framework {
-            baseName = "KiitCall"
+            baseName = "KiitIdentity"
             isStatic = true
         }
     }
 
     sourceSets {
         commonMain.dependencies {
-            // No dependencies. Identity/Agent/Source/About have no date fields and nothing else
-            // that needs an external library, only kotlin.uuid.Uuid (stdlib) for Identity's
-            // instance default. Zero kiit dependencies too, same as kiit-codes.
+            // No dependencies. Identity/Agent have no date fields and nothing else that needs
+            // an external library, only kotlin.uuid.Uuid (stdlib) for Identity's instance
+            // default. Zero kiit dependencies too, same as kiit-codes.
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -59,7 +59,7 @@ skie {
 }
 
 android {
-    namespace = "kiit.call"
+    namespace = "kiit.identity"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
@@ -78,20 +78,20 @@ android {
  * signing.gnupg.keyName=
  * signing.gnupg.passphrase=
  *
- * Maven local: ~/.m2/repository/dev/kiit/kiit-call/
+ * Maven local: ~/.m2/repository/dev/kiit/kiit-identity/
  */
 mavenPublishing {
     publishToMavenCentral(automaticRelease = true)
 
     coordinates(
         groupId = "dev.kiit",
-        artifactId = "kiit-call",
+        artifactId = "kiit-identity",
         version = libraryVersion,
     )
     pom {
-        name = "kiit-call"
-        description = "Identity and app-description types for which service or running instance " +
-            "something is associated with - Kotlin Multiplatform."
+        name = "kiit-identity"
+        description = "Identity types for which service or running instance something is " +
+            "associated with - Kotlin Multiplatform."
         url = "https://kiit.dev"
         licenses {
             license {
@@ -107,9 +107,9 @@ mavenPublishing {
             }
         }
         scm {
-            url = "https://github.com/kiitdev/kiit-call"
-            connection = "scm:git:git://github.com/kiitdev/kiit-call.git"
-            developerConnection = "scm:git:ssh://git@github.com/kiitdev/kiit-call.git"
+            url = "https://github.com/kiitdev/kiit-identity"
+            connection = "scm:git:git://github.com/kiitdev/kiit-identity.git"
+            developerConnection = "scm:git:ssh://git@github.com/kiitdev/kiit-identity.git"
         }
     }
 }

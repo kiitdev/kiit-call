@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalUuidApi::class)
 
-package kiit.call
+package kiit.identity
 
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -17,7 +17,7 @@ import kotlin.uuid.Uuid
  * @param area area | dept | org, logical group
  * @param service user1 | job | svc, distinguishes multiple agents/users
  * @param agent the type of service, api | app | job
- * @param env dev | qat | pro, environment. A plain String, not an EnvMode type: kiit-call has
+ * @param env dev | qat | pro, environment. A plain String, not an EnvMode type: kiit-identity has
  * no dependency on kiit-conf-envs (Identity is needed well beyond env-aware bootstrap code), so
  * callers pass whatever env label they're already using.
  * @param instance id of the instance, for multiple instances of a service

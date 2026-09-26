@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: kiit-call-kotlin
+        working-directory: kiit-identity-kotlin
     steps:
       - uses: actions/checkout@v4
 
@@ -26,19 +26,19 @@ jobs:
           cache: gradle
 
       - name: ktlint
-        run: ./gradlew :kiit-call:ktlintCheck
+        run: ./gradlew :kiit-identity:ktlintCheck
 
       - name: detekt
-        run: ./gradlew :kiit-call:detekt
+        run: ./gradlew :kiit-identity:detekt
 
       - name: JVM tests (commonTest)
-        run: ./gradlew :kiit-call:jvmTest
+        run: ./gradlew :kiit-identity:jvmTest
 
   ios-checks:
     runs-on: macos-latest
     defaults:
       run:
-        working-directory: kiit-call-kotlin
+        working-directory: kiit-identity-kotlin
     steps:
       - uses: actions/checkout@v4
 
@@ -51,4 +51,4 @@ jobs:
       # SKIE's Swift-side compile step needs Xcode/swiftc/xcrun, not just Gradle — a macOS
       # runner, same requirement every other kiit KMP module needs.
       - name: iOS simulator tests (commonTest)
-        run: ./gradlew :kiit-call:iosSimulatorArm64Test
+        run: ./gradlew :kiit-identity:iosSimulatorArm64Test

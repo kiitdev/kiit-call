@@ -1,4 +1,4 @@
-package kiit.call
+package kiit.identity
 
 import kotlin.test.Test
 import kotlin.test.assertEquals

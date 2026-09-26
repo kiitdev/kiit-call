@@ -19,9 +19,9 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "kiit-call-kotlin"
+rootProject.name = "kiit-identity-kotlin"
 
-include(":kiit-call")
+include(":kiit-identity")
 include(":sample-kotlin")
 
 // sample-kotlin stays in the shared ./samples/ folder alongside sample-java/sample-swift, one

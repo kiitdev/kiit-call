@@ -11,7 +11,7 @@ jobs:
     runs-on: macos-latest   # required for iOS target build/sign — Kotlin/Native iOS needs Xcode
     defaults:
       run:
-        working-directory: kiit-call-kotlin
+        working-directory: kiit-identity-kotlin
     steps:
       - uses: actions/checkout@v4
         with:
@@ -33,7 +33,7 @@ jobs:
 
       - name: Read version from Gradle
         id: version
-        run: echo "value=$(./gradlew :kiit-call:printVersion -q)" >> "$GITHUB_OUTPUT"
+        run: echo "value=$(./gradlew :kiit-identity:printVersion -q)" >> "$GITHUB_OUTPUT"
 
       - name: Verify tag does not already exist
         run: |
@@ -44,7 +44,7 @@ jobs:
 
       - name: Verification checks (lint + tests)
         run: |
-          ./gradlew :kiit-call:ktlintCheck :kiit-call:detekt :kiit-call:jvmTest
+          ./gradlew :kiit-identity:ktlintCheck :kiit-identity:detekt :kiit-identity:jvmTest
 
       - name: Import GPG key
         run: |
@@ -59,7 +59,7 @@ jobs:
 
       - name: Publish to Maven Central
         run: |
-          ./gradlew :kiit-call:publishAndReleaseToMavenCentral \
+          ./gradlew :kiit-identity:publishAndReleaseToMavenCentral \
             -Psigning.gnupg.keyName=${{ secrets.KIIT_MAVEN_GPGNAME }} \
             -Psigning.gnupg.passphrase=${{ secrets.KIIT_MAVEN_GPGPASS }} \
             -PmavenCentralUsername=${{ secrets.KIIT_MAVEN_USER }} \

@@ -1,7 +1,6 @@
 package sample
 
-import kiit.call.About
-import kiit.call.Identity
+import kiit.identity.Identity
 
 /** Builds an Identity the way a service would at startup, then derives its own logging id. */
 fun identityExample() {
@@ -23,21 +22,7 @@ fun cloneExample() {
     println("same instance? ${original.instance == tagged.instance}")
 }
 
-/** About is the prose complement to Identity, and converts directly into one. */
-fun aboutExample() {
-    val about = About.simple(
-        company = "codehelix",
-        area = "accounts",
-        name = "signup",
-        desc = "Handles new user signup.",
-    )
-
-    println(about.toStringProps())
-    println("as identity: ${about.toId().full}")
-}
-
 fun main() {
     identityExample()
     cloneExample()
-    aboutExample()
 }

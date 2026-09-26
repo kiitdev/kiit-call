@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for your interest in kiit-call.
+Thanks for your interest in kiit-identity.
 
 ## Where things stand right now
 
