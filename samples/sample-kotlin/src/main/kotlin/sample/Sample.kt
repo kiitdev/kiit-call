@@ -10,7 +10,7 @@ fun identityExample() {
 
     println("path=${identity.path}")
     println("name=${identity.name}")
-    println("full=${identity.full}")
+    println("fullName=${identity.fullName}")
     println("install=${identity.install}")
     println("id=${identity.id}")
     println("agent=${identity.agent}")
@@ -39,7 +39,7 @@ fun ofExample() {
             uri = "worker-7.codehelix.internal",
         )
 
-    println("full=${identity.full}")
+    println("fullName=${identity.fullName}")
     println("about=${identity.about}")
     println("uri=${identity.uri}")
 }

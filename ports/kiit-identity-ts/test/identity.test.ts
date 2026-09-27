@@ -5,12 +5,12 @@ import toIdentCases from "./fixtures/to-ident-cases.json" with { type: "json" };
 // Ported from IdentityTest.kt. Kotlin's named/default arguments become an options object.
 
 describe("Identity naming", () => {
-  it("path, name, full, install and id follow the documented convention", () => {
+  it("path, name, fullName, install and id follow the documented convention", () => {
     const identity = Identity.of({ origin: "app1", scope: "accounts.signup", agent: Agent.Job, env: "qat", version: "1.0.2" });
 
     expect(identity.path).toBe("app1:accounts.signup");
     expect(identity.name).toBe("app1:accounts.signup:job");
-    expect(identity.full).toBe("app1:accounts.signup:job:qat");
+    expect(identity.fullName).toBe("app1:accounts.signup:job:qat");
     expect(identity.install).toBe("app1:accounts.signup:job:qat:1.0.2");
     expect(identity.id.startsWith("app1:accounts.signup:job:qat:1.0.2:")).toBe(true);
   });

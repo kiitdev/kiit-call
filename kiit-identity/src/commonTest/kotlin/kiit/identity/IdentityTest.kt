@@ -7,12 +7,12 @@ import kotlin.test.assertTrue
 
 class IdentityTest {
     @Test
-    fun pathNameFullInstallIdFollowTheDocumentedConvention() {
+    fun pathNameFullNameInstallIdFollowTheDocumentedConvention() {
         val identity = Identity.of("app1", "accounts.signup", Agent.Job, "qat", version = "1.0.2")
 
         assertEquals("app1:accounts.signup", identity.path)
         assertEquals("app1:accounts.signup:job", identity.name)
-        assertEquals("app1:accounts.signup:job:qat", identity.full)
+        assertEquals("app1:accounts.signup:job:qat", identity.fullName)
         assertEquals("app1:accounts.signup:job:qat:1.0.2", identity.install)
         assertTrue(identity.id.startsWith("app1:accounts.signup:job:qat:1.0.2:"))
     }

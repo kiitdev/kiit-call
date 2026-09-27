@@ -5,7 +5,7 @@ package kiit.identity
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-/** ":" — the delimiter [Identity]'s `path`/`name`/`full`/`install`/`id` are built from. */
+/** ":" — the delimiter [Identity]'s `path`/`name`/`fullName`/`install`/`id` are built from. */
 const val IDENTITY_DELIMITER = ":"
 
 /**
@@ -13,7 +13,7 @@ const val IDENTITY_DELIMITER = ":"
  * nothing more: no `path`/`id`-style derived properties here, and no default implementations to
  * inherit. [Identity] is the canonical, constructible way to get that behavior. Implement this
  * directly only when you need a custom storage shape (wrapping an existing domain object, say);
- * you still won't get `path`/`name`/`full`/`install`/`id` for it, since those belong to
+ * you still won't get `path`/`name`/`fullName`/`install`/`id` for it, since those belong to
  * [Identity], not to every possible shape that happens to carry these nine fields.
  *
  * The fields build up from broad to specific:
@@ -82,26 +82,26 @@ interface IIdentity {
  * Identity used to identify services/components.
  *
  * ```
- * path    = origin:scope
- * name    = path:agent                = origin:scope:agent
- * full    = name:env                  = origin:scope:agent:env
- * install = full:version              = origin:scope:agent:env:version
- * id      = install:instance          = origin:scope:agent:env:version:instance
+ * path     = origin:scope
+ * name     = path:agent                = origin:scope:agent
+ * fullName = name:env                  = origin:scope:agent:env
+ * install  = fullName:version          = origin:scope:agent:env:version
+ * id       = install:instance          = origin:scope:agent:env:version:instance
  * ```
  *
  * For `Identity.api("acme", "accounts.signup", "qat")` with `version = "1.4.2"`:
  * ```
- * path    = acme:accounts.signup
- * name    = acme:accounts.signup:api
- * full    = acme:accounts.signup:api:qat
- * install = acme:accounts.signup:api:qat:1.4.2
- * id      = acme:accounts.signup:api:qat:1.4.2:4a3b300b-d0ac-4776-8a9c-31aa75e412b3
+ * path     = acme:accounts.signup
+ * name     = acme:accounts.signup:api
+ * fullName = acme:accounts.signup:api:qat
+ * install  = acme:accounts.signup:api:qat:1.4.2
+ * id       = acme:accounts.signup:api:qat:1.4.2:4a3b300b-d0ac-4776-8a9c-31aa75e412b3
  * ```
  *
  * Every segment except [instance] is lowercased, so two identities that only differ by casing in
- * [origin]/[scope]/[agent]/[env]/[version] still produce the same [path]/[name]/[full]/[install]/
- * [id]. [instance] is left exactly as given, since folding its case could make two genuinely
- * different instances collide.
+ * [origin]/[scope]/[agent]/[env]/[version] still produce the same
+ * [path]/[name]/[fullName]/[install]/[id]. [instance] is left exactly as given, since folding its
+ * case could make two genuinely different instances collide.
  *
  * Immutable. [newInstance]/[with] return a new [Identity] rather than mutating this one.
  *
@@ -139,13 +139,13 @@ data class Identity internal constructor(
     val name: String get() = "$path$IDENTITY_DELIMITER${agent.name.lowercase()}"
 
     /** [name] plus [env], lowercased, e.g. `"acme:accounts.signup:api:qat"`. */
-    val full: String get() = "$name$IDENTITY_DELIMITER${env.lowercase()}"
+    val fullName: String get() = "$name$IDENTITY_DELIMITER${env.lowercase()}"
 
     /**
-     * [full] plus [version], lowercased, e.g. `"acme:accounts.signup:api:qat:1.4.2"`. Named for
-     * what it is: a specific version installed into a specific environment.
+     * [fullName] plus [version], lowercased, e.g. `"acme:accounts.signup:api:qat:1.4.2"`. Named
+     * for what it is: a specific version installed into a specific environment.
      */
-    val install: String get() = "$full$IDENTITY_DELIMITER${version.lowercase()}"
+    val install: String get() = "$fullName$IDENTITY_DELIMITER${version.lowercase()}"
 
     /**
      * [install] plus [instance], not lowercased, e.g.

@@ -11,7 +11,7 @@ function identityExample(): void {
 
   console.log(`path=${identity.path}`);
   console.log(`name=${identity.name}`);
-  console.log(`full=${identity.full}`);
+  console.log(`fullName=${identity.fullName}`);
   console.log(`install=${identity.install}`);
   console.log(`id=${identity.id}`);
   console.log(`agent=${identity.agent}`);
@@ -40,7 +40,7 @@ function ofExample(): void {
     uri: "worker-7.codehelix.internal",
   });
 
-  console.log(`full=${identity.full}`);
+  console.log(`fullName=${identity.fullName}`);
   console.log(`about=${identity.about}`);
   console.log(`uri=${identity.uri}`);
 }

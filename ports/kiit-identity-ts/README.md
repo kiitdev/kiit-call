@@ -27,11 +27,11 @@ npm install @kiitdev/identity
 |---|---|---|
 | `path` | `origin`, `scope` | `acme:accounts.signup` |
 | `name` | `agent` | `acme:accounts.signup:api` |
-| `full` | `env` | `acme:accounts.signup:api:qat` |
+| `fullName` | `env` | `acme:accounts.signup:api:qat` |
 | `install` | `version` | `acme:accounts.signup:api:qat:1.0.2` |
 | `id` | `instance` | `acme:accounts.signup:api:qat:1.0.2:4a3b300b-...` |
 
-`name` reads the same regardless of environment ("this component"), `full` pins it to one environment, `install` pins it to one version deployed there, and `id` is unique per running instance.
+`name` reads the same regardless of environment ("this component"), `fullName` pins it to one environment, `install` pins it to one version deployed there, and `id` is unique per running instance.
 
 Shortcuts cover the common agents: `Identity.app`, `api`, `cli`, `job` take `(origin, scope, env = "dev")`, and `Identity.test(origin, name)` puts the identity under a `tests.<name>` scope. For everything else, use `Identity.of` with an options object:
 
@@ -67,7 +67,7 @@ const identity = Identity.of({
 | `tags` | Labels attached to this identity. See [Tag](#tag) below. Not part of any derived accessor, and not normalized. |
 | `uri` | Optional reference to this instance (a hostname, a service-discovery address). Not part of any derived accessor. |
 
-`IIdentity` is the plain data contract above (all nine fields, no behavior), exported for anyone who wants a custom shape. `Identity` is the concrete implementation, and the only place `path`/`name`/`full`/`install`/`id` live. Implementing `IIdentity` yourself doesn't get you those for free, on purpose: if you need them, build a real `Identity`.
+`IIdentity` is the plain data contract above (all nine fields, no behavior), exported for anyone who wants a custom shape. `Identity` is the concrete implementation, and the only place `path`/`name`/`fullName`/`install`/`id` live. Implementing `IIdentity` yourself doesn't get you those for free, on purpose: if you need them, build a real `Identity`.
 
 ## Immutable
 
@@ -97,7 +97,7 @@ Tag.Keyed("region", "us-east-1");      // { kind: "Keyed", key: "region", value:
 Tag.parse("region=us-east-1");         // same as Tag.Keyed("region", "us-east-1")
 ```
 
-`Tag.parse` splits on the first `TAG_DELIMITER` (`"="`), so a value containing `=` (e.g. `"config=key=value"`) parses to `Tag.Keyed("config", "key=value")`. `TAG_DELIMITER` is its own constant, separate from `IDENTITY_DELIMITER` — a tag's key/value syntax is a different protocol from the `path`/`name`/`full`/`install`/`id` chain, and giving each its own delimiter means changing one never risks the other. `kind` is a TypeScript-only addition: Kotlin narrows with `is Tag.Basic`/`is Tag.Keyed` against the sealed class itself, which has no equivalent over a plain object here, so `kind` is what a `switch` narrows on instead.
+`Tag.parse` splits on the first `TAG_DELIMITER` (`"="`), so a value containing `=` (e.g. `"config=key=value"`) parses to `Tag.Keyed("config", "key=value")`. `TAG_DELIMITER` is its own constant, separate from `IDENTITY_DELIMITER` — a tag's key/value syntax is a different protocol from the `path`/`name`/`fullName`/`install`/`id` chain, and giving each its own delimiter means changing one never risks the other. `kind` is a TypeScript-only addition: Kotlin narrows with `is Tag.Basic`/`is Tag.Keyed` against the sealed class itself, which has no equivalent over a plain object here, so `kind` is what a `switch` narrows on instead.
 
 `Tag.Basic`/`Tag.Keyed` are exported factory functions, not classes — `raw` is computed from `value`/`key` at construction, not enforced afterward. Building the object shape by hand instead of going through the factories (or `parse`) can produce a `Tag` where `raw` doesn't actually match `value`/`key`; that's not supported.
 

@@ -71,11 +71,11 @@ See [`samples/sample-kotlin`](./samples/sample-kotlin) for a runnable end-to-end
 |---|---|---|
 | `path` | `origin`, `scope` | `acme:accounts.signup` |
 | `name` | `agent` | `acme:accounts.signup:api` |
-| `full` | `env` | `acme:accounts.signup:api:qat` |
+| `fullName` | `env` | `acme:accounts.signup:api:qat` |
 | `install` | `version` | `acme:accounts.signup:api:qat:1.0.2` |
 | `id` | `instance` | `acme:accounts.signup:api:qat:1.0.2:4a3b300b-...` |
 
-`name` is the same regardless of environment ("this component"), `full` pins it to one environment, `install` pins it to one version deployed to that environment, and `id` is unique per running instance.
+`name` is the same regardless of environment ("this component"), `fullName` pins it to one environment, `install` pins it to one version deployed to that environment, and `id` is unique per running instance.
 
 | Term | What it is |
 |---|---|
@@ -86,7 +86,7 @@ See [`samples/sample-kotlin`](./samples/sample-kotlin) for a runnable end-to-end
 | **`tags`** | Labels attached to this identity: `Tag.Basic("retry")` or `Tag.Keyed("region", "us-east-1")`. `Tag.parse("region=us-east-1")` splits on the first `=`. Not part of any derived accessor, and not normalized — a tag's value often needs preserving exactly as given (a trace id, a hash), not canonicalized the way `origin`/`scope` are. |
 | **`uri`** | Optional reference to this instance itself (a hostname, a service-discovery address). Unique per environment, not part of any derived accessor. |
 
-`IIdentity` is the plain data contract (all nine fields, no behavior) for anyone who wants a custom shape. `Identity` is the concrete, constructible implementation, and the only place `path`/`name`/`full`/`install`/`id` live — implementing `IIdentity` yourself doesn't get you those for free, on purpose. If you need them, build a real `Identity`.
+`IIdentity` is the plain data contract (all nine fields, no behavior) for anyone who wants a custom shape. `Identity` is the concrete, constructible implementation, and the only place `path`/`name`/`fullName`/`install`/`id` live — implementing `IIdentity` yourself doesn't get you those for free, on purpose. If you need them, build a real `Identity`.
 
 **Equality.** Two identities are equal when their `id` is equal, so `about`/`tags`/`uri` don't count — `equals`/`hashCode`/`toString` are all overridden to match, rather than relying on `data class`'s default (which would otherwise compare/print all nine fields). This mirrors how identity actually travels on the wire: a caller sends its `id` as a header (e.g. `x-client-id`), and a server treats two requests as the same caller exactly when that value matches, nothing more.
 

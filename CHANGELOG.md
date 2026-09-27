@@ -32,8 +32,8 @@ All notable changes to kiit-identity are documented here. Format follows
 - Redesigned `Identity` to align with kiit-codes' `Status` (`origin`/`scope`, `:`-delimited
   accessors). `company`/`area`/`service` are replaced by `origin`/`scope` (a single free-form,
   dot-structured field). `desc` is renamed `about`. A new optional `uri` field was added.
-  `name`/`full`/`id` are `:`-joined instead of `.`-joined, and a new `install` accessor sits
-  between `full` and `id` (`origin:scope:agent:env:version`); `idWithTags` is removed. Every
+  `name`/`fullName`/`id` are `:`-joined instead of `.`-joined, and a new `install` accessor sits
+  between `fullName` and `id` (`origin:scope:agent:env:version`); `idWithTags` is removed. Every
   accessor except `instance` is lowercased. `Identity` now implements a new `IIdentity` interface
   (a plain data contract, no derived accessors of its own) for consumers who want a custom shape.
   `Agent`'s int `value` is dropped, `Svc` is renamed `Service`, and `Worker` is added. Since this

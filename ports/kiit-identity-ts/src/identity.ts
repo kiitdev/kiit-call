@@ -2,7 +2,7 @@ import { Agent } from "./agent.js";
 import type { Tag } from "./tag.js";
 import { randomUuid } from "./uuid.js";
 
-/** ":" — the delimiter Identity's `path`/`name`/`full`/`install`/`id` are built from. */
+/** ":" — the delimiter Identity's `path`/`name`/`fullName`/`install`/`id` are built from. */
 export const IDENTITY_DELIMITER = ":";
 
 /**
@@ -10,7 +10,7 @@ export const IDENTITY_DELIMITER = ":";
  * nothing more: no `path`/`id`-style derived properties here, and nothing to inherit for free.
  * `Identity` is the canonical, constructible way to get that behavior. Implement this directly
  * only when you need a custom storage shape (wrapping an existing domain object, say); you still
- * won't get `path`/`name`/`full`/`install`/`id` for it, since those belong to `Identity`, not to
+ * won't get `path`/`name`/`fullName`/`install`/`id` for it, since those belong to `Identity`, not to
  * every possible shape that happens to carry these nine fields.
  *
  * The fields build up from broad to specific:
@@ -94,25 +94,25 @@ export interface IdentityOptions {
  * Identity used to identify services/components.
  *
  * ```
- * path    = origin:scope
- * name    = path:agent                = origin:scope:agent
- * full    = name:env                  = origin:scope:agent:env
- * install = full:version              = origin:scope:agent:env:version
- * id      = install:instance          = origin:scope:agent:env:version:instance
+ * path     = origin:scope
+ * name     = path:agent                = origin:scope:agent
+ * fullName = name:env                  = origin:scope:agent:env
+ * install  = fullName:version          = origin:scope:agent:env:version
+ * id       = install:instance          = origin:scope:agent:env:version:instance
  * ```
  *
  * For `Identity.api("acme", "accounts.signup", "qat")` with `version: "1.4.2"`:
  * ```
- * path    = acme:accounts.signup
- * name    = acme:accounts.signup:api
- * full    = acme:accounts.signup:api:qat
- * install = acme:accounts.signup:api:qat:1.4.2
- * id      = acme:accounts.signup:api:qat:1.4.2:4a3b300b-d0ac-4776-8a9c-31aa75e412b3
+ * path     = acme:accounts.signup
+ * name     = acme:accounts.signup:api
+ * fullName = acme:accounts.signup:api:qat
+ * install  = acme:accounts.signup:api:qat:1.4.2
+ * id       = acme:accounts.signup:api:qat:1.4.2:4a3b300b-d0ac-4776-8a9c-31aa75e412b3
  * ```
  *
  * Every segment except `instance` is lowercased, so two identities that only differ by casing in
- * origin/scope/agent/env/version still produce the same path/name/full/install/id. `instance` is
- * left exactly as given, since folding its case could make two genuinely different instances
+ * origin/scope/agent/env/version still produce the same path/name/fullName/install/id. `instance`
+ * is left exactly as given, since folding its case could make two genuinely different instances
  * collide.
  *
  * Immutable. `newInstance`/`with` return a new `Identity` rather than mutating this one.
@@ -157,16 +157,16 @@ export class Identity implements IIdentity {
   }
 
   /** `name` plus `env`, lowercased, e.g. "acme:accounts.signup:api:qat". */
-  get full(): string {
+  get fullName(): string {
     return `${this.name}${IDENTITY_DELIMITER}${this.env.toLowerCase()}`;
   }
 
   /**
-   * `full` plus `version`, lowercased, e.g. "acme:accounts.signup:api:qat:1.4.2". Named for what
-   * it is: a specific version installed into a specific environment.
+   * `fullName` plus `version`, lowercased, e.g. "acme:accounts.signup:api:qat:1.4.2". Named for
+   * what it is: a specific version installed into a specific environment.
    */
   get install(): string {
-    return `${this.full}${IDENTITY_DELIMITER}${this.version.toLowerCase()}`;
+    return `${this.fullName}${IDENTITY_DELIMITER}${this.version.toLowerCase()}`;
   }
 
   /**
