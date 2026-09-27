@@ -114,7 +114,8 @@ data class Identity(
      */
     val install: String get() = "$full$IDENTITY_DELIMITER${version.lowercase()}"
 
-    /** [install] plus [instance], not lowercased: `origin:scope:agent:env:version:instance`. Unique per  instance. */
+    /** [install] plus [instance], not lowercased: `origin:scope:agent:env:version:instance`.
+     * Unique per running instance. */
     val id: String get() = "$install$IDENTITY_DELIMITER$instance"
 
     /** Same identity with a new random instance id. */
