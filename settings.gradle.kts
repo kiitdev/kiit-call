@@ -19,12 +19,8 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "kiit-identity-kotlin"
+rootProject.name = "kiit-identity"
 
 include(":kiit-identity")
-include(":sample-kotlin")
-
-// sample-kotlin stays in the shared ./samples/ folder alongside sample-java/sample-swift, one
-// level up from this settings file. sample-java/sample-swift start as empty placeholders, not
-// included here until they have real content.
-project(":sample-kotlin").projectDir = file("../samples/sample-kotlin")
+include(":samples:sample-kotlin")
+include(":samples:sample-java")

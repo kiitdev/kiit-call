@@ -14,15 +14,15 @@ plugins {
     alias(libs.plugins.skie) apply false
 }
 
-// Keeps IntelliJ from indexing the TypeScript port and sample (node_modules, dist). Defined here
-// rather than through "Mark Directory as Excluded" so it survives Gradle re-syncs. The paths are
-// one level up because this Gradle root is kiit-identity-kotlin/, not the repo root.
+// Keeps IntelliJ from indexing the TypeScript port and non-Gradle samples (node_modules, dist).
+// Gradle itself already ignores them, they aren't included in settings.gradle.kts.
 idea {
     module {
         excludeDirs.addAll(
             listOf(
-                file("../ports"),
-                file("../samples/sample-ts"),
+                file("ports"),
+                file("samples/sample-ts"),
+                file("samples/sample-swift"),
             ),
         )
     }
