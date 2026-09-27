@@ -1,0 +1,12 @@
+[
+  { "input": "My Company", "expected": "my_company" },
+  { "input": "Sign Up!", "expected": "sign_up" },
+  { "input": "  Trim Me  ", "expected": "trim_me" },
+  { "input": "a.b.c", "expected": "a.b.c" },
+  { "input": "!!!", "expected": "_" },
+  { "input": "   ", "expected": "_" },
+  { "input": "", "expected": "_" },
+  { "input": "Über-Svc_1", "expected": "über-svc_1" },
+  { "input": "café", "expected": "café" },
+  { "input": "日本語 サービス", "expected": "日本語_サービス" }
+]

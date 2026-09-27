@@ -28,10 +28,10 @@ A cache entry needs to know which service owns it. A telemetry counter needs to 
 ```kotlin
 import kiit.identity.Identity
 
-val identity = Identity.api(company = "acme", area = "accounts", service = "signup", env = "qat")
+val identity = Identity.api(origin = "acme", scope = "accounts.signup", env = "qat")
 
-println(identity.name)  // acme.accounts.signup.api
-println(identity.full)  // acme.accounts.signup.api.qat.latest
+println(identity.name)     // acme:accounts.signup:api
+println(identity.install)  // acme:accounts.signup:api:qat:latest
 ```
 
 None of these types are tied to requests, RPC, caching, telemetry, or jobs specifically. Each of those depends on kiit-identity, it doesn't depend on any of them.
@@ -51,7 +51,7 @@ dependencies {
 ```kotlin
 import kiit.identity.Identity
 
-val original = Identity.job("acme", "accounts", "signup")
+val original = Identity.job("acme", "accounts.signup")
 val retried = original.with(inst = null, tags = listOf("retry"))
 
 println(original.tags)  // []
@@ -60,12 +60,31 @@ println(retried.tags)   // [retry]
 
 See [`samples/sample-kotlin`](./samples/sample-kotlin) for a runnable end-to-end example.
 
+**TypeScript.** A native port lives in [`ports/kiit-identity-ts`](./ports/kiit-identity-ts) (`@kiitdev/identity`), with a sample in [`samples/sample-ts`](./samples/sample-ts).
+
 ## Concepts
+
+`Identity` builds up five accessors, one field at a time, each one lowercased except `instance`:
+
+| Accessor | Adds | Example |
+|---|---|---|
+| `path` | `origin`, `scope` | `acme:accounts.signup` |
+| `name` | `agent` | `acme:accounts.signup:api` |
+| `full` | `env` | `acme:accounts.signup:api:qat` |
+| `install` | `version` | `acme:accounts.signup:api:qat:1.0.2` |
+| `id` | `instance` | `acme:accounts.signup:api:qat:1.0.2:4a3b300b-...` |
+
+`name` is the same regardless of environment ("this component"), `full` pins it to one environment, `install` pins it to one version deployed to that environment, and `id` is unique per running instance.
 
 | Term | What it is |
 |---|---|
-| **`Identity`** | `company.area.service.agent.env.instance` structural identifier for a service/component. Every field lands in `name`/`full`/`id`, dot-joined, so it's stable and log-friendly. |
-| **`Agent`** | What kind of runnable app or service has this identity: `App`, `CLI`, `Web`, `API`, `Bot`, `Job`, `Svc`, `Test`. A closed set, a real enum, no runtime-extensible case. |
+| **`origin`** | Domain-like label for who owns this, e.g. `"acme.com"` or `"acme"`. Same convention as `Status.origin` in [kiit-codes](../kiit-codes). |
+| **`scope`** | Free-form, consumer-defined label for where in `origin` this lives, e.g. `"accounts.signup"`. Dots express hierarchy, same convention as `Status.scope`. |
+| **`Agent`** | What kind of runnable app or service has this identity: `App`, `CLI`, `Web`, `API`, `Bot`, `Job`, `Worker`, `Service`, `Test`. A closed set, a real enum, no runtime-extensible case. |
+| **`about`** | Short, human-readable description of what this is or does. Not part of any derived accessor. |
+| **`uri`** | Optional reference to this instance itself (a hostname, a service-discovery address). Unique per environment, not part of any derived accessor. |
+
+`IIdentity` is the plain data contract (all nine fields, no behavior) for anyone who wants a custom shape. `Identity` is the concrete, constructible implementation, and the only place `path`/`name`/`full`/`install`/`id` live — implementing `IIdentity` yourself doesn't get you those for free, on purpose. If you need them, build a real `Identity`.
 
 `Identity.env` is a plain `String`, not a typed enum. kiit-identity has no dependency on the environment-selection module (`kiit-conf-envs`), since `Identity` is needed well beyond env-aware bootstrap code, so callers pass whatever env label they're already using.
 
@@ -83,6 +102,7 @@ See [`samples/sample-kotlin`](./samples/sample-kotlin) for a runnable end-to-end
 
 - Kotlin Multiplatform
 - JVM, Android, iOS (arm64, simulator arm64, x64)
+- TypeScript port: Node 24+ and modern browsers
 - No dependencies
 
 ## License
