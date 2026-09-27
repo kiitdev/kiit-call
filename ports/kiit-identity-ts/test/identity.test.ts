@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { Agent, Identity } from "../src/index.js";
+import { Agent, Identity, Tag } from "../src/index.js";
 import toIdentCases from "./fixtures/to-ident-cases.json" with { type: "json" };
 
 // Ported from IdentityTest.kt. Kotlin's named/default arguments become an options object.
@@ -59,10 +59,10 @@ describe("Identity.of", () => {
   it("keeps an explicit instance, version, about, tags and uri", () => {
     const identity = Identity.of({
       origin: "c", scope: "s", agent: Agent.App, instance: "i-1", version: "2.0", about: "hello",
-      tags: ["retry", "beta"], uri: "svc-7.internal",
+      tags: [Tag.Basic("retry"), Tag.Keyed("region", "us-east-1")], uri: "svc-7.internal",
     });
 
-    expect(identity.tags).toEqual(["retry", "beta"]);
+    expect(identity.tags).toEqual([Tag.Basic("retry"), Tag.Keyed("region", "us-east-1")]);
     expect(identity.instance).toBe("i-1");
     expect(identity.version).toBe("2.0");
     expect(identity.about).toBe("hello");
@@ -96,10 +96,10 @@ describe("Identity copies", () => {
 
   it("with overrides the instance and tags", () => {
     const original = Identity.of({ origin: "app1", scope: "accounts.signup", agent: Agent.App });
-    const updated = original.with("fixed-instance", ["a", "b"]);
+    const updated = original.with("fixed-instance", [Tag.Basic("a"), Tag.Basic("b")]);
 
     expect(updated.instance).toBe("fixed-instance");
-    expect(updated.tags).toEqual(["a", "b"]);
+    expect(updated.tags).toEqual([Tag.Basic("a"), Tag.Basic("b")]);
     expect(updated.id.endsWith("fixed-instance")).toBe(true);
   });
 
@@ -111,7 +111,7 @@ describe("Identity copies", () => {
 
   it("does not mutate the original", () => {
     const original = Identity.of({ origin: "c", scope: "s", agent: Agent.App, instance: "i-1" });
-    original.with("i-2", ["x"]);
+    original.with("i-2", [Tag.Basic("x")]);
     original.newInstance();
 
     expect(original.instance).toBe("i-1");
@@ -119,11 +119,11 @@ describe("Identity copies", () => {
   });
 
   it("copies the tags array, so later changes to the input don't leak in", () => {
-    const tags = ["a"];
+    const tags = [Tag.Basic("a")];
     const identity = Identity.of({ origin: "c", scope: "s", agent: Agent.App }).with("i", tags);
-    tags.push("b");
+    tags.push(Tag.Basic("b"));
 
-    expect(identity.tags).toEqual(["a"]);
+    expect(identity.tags).toEqual([Tag.Basic("a")]);
     expect(Object.isFrozen(identity.tags)).toBe(true);
   });
 });

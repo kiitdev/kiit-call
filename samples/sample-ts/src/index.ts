@@ -3,7 +3,7 @@
  * each derived accessor and that the type is immutable. Type-checked against the native port with
  * `npm run typecheck`.
  */
-import { Agent, Identity } from "@kiitdev/identity";
+import { Agent, Identity, Tag } from "@kiitdev/identity";
 
 /** Builds an Identity the way a service would at startup, then looks at each derived accessor. */
 function identityExample(): void {
