@@ -1,4 +1,5 @@
 import { Agent } from "./agent.js";
+import type { Tag } from "./tag.js";
 import { randomUuid } from "./uuid.js";
 
 /** ":" — the delimiter Identity's `path`/`name`/`full`/`install`/`id` are built from. */
@@ -60,8 +61,11 @@ export interface IIdentity {
    */
   readonly instance: string;
 
-  /** Freeform metadata, e.g. ["retry", "beta"]. Not part of any derived identifier. */
-  readonly tags: readonly string[];
+  /**
+   * Labels attached to this identity, e.g. [Tag.Basic("retry"), Tag.Keyed("region", "us-east-1")].
+   * Not part of any derived identifier.
+   */
+  readonly tags: readonly Tag[];
 
   /**
    * Optional reference to this instance itself, e.g. "accounts-signup.acme.internal". Unique per
@@ -82,7 +86,7 @@ export interface IdentityOptions {
   readonly about?: string | null;
   readonly version?: string | null;
   readonly instance?: string | null;
-  readonly tags?: readonly string[] | null;
+  readonly tags?: readonly Tag[] | null;
   readonly uri?: string | null;
 }
 
@@ -127,7 +131,7 @@ export class Identity implements IIdentity {
   readonly about: string;
   readonly version: string;
   readonly instance: string;
-  readonly tags: readonly string[];
+  readonly tags: readonly Tag[];
   readonly uri: string | null;
 
   private constructor(options: IdentityOptions) {
@@ -180,7 +184,7 @@ export class Identity implements IIdentity {
   }
 
   /** Same identity with the given instance id (random if null/undefined) and tags. */
-  with(inst: string | null | undefined, tags: readonly string[]): Identity {
+  with(inst: string | null | undefined, tags: readonly Tag[]): Identity {
     return new Identity({ ...this, instance: inst ?? randomUuid(), tags });
   }
 
