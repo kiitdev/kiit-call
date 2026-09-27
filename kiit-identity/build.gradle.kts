@@ -13,7 +13,7 @@ plugins {
 // Single source of truth for the published version, mirroring every other kiit module. Left as
 // a placeholder: the starting version and first publish target (GitHub Packages pre-release vs.
 // Maven Central stable) are the module owner's call, not something to lock in during scaffolding.
-val libraryVersion = "0.8.0"
+val libraryVersion = "0.9.0"
 
 kotlin {
     jvm {

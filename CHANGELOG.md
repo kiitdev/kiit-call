@@ -8,15 +8,49 @@ All notable changes to kiit-identity are documented here. Format follows
 
 ### Added
 - Extracted from the Kiit monorepo as its own standalone module.
+- `@kiitdev/identity`, a native TypeScript port of `Identity`, `Agent`, and `Tag` in
+  `ports/kiit-identity-ts`, with a sample in `samples/sample-ts`. Equality in the port compares
+  `id`, and `Agent` has no int `value`, see the port's README.
+- `Tag` (`Basic`/`Keyed`, with `parse`), moved here from `kiit-requests`: `Identity.tags` and
+  `kiit-requests`'s own `tags` field now share one type instead of two independently-drifting
+  designs. Its key/value delimiter changed from `:` to `=` (`TAG_DELIMITER`, a public constant
+  alongside `IDENTITY_DELIMITER`) to avoid two unrelated protocols reaching for the same
+  character. `kiit-requests` still has its own local `Tag` for now; that side of the move is a
+  followup once this module is published.
+- `Identity.equals`/`hashCode`/`toString` are now explicit, `id`-based overrides (`about`/`tags`/
+  `uri` excluded), instead of `data class`'s default field-by-field behavior. This matches how
+  identity travels on the wire: a caller sends its `id` as a header (e.g. `x-client-id`), so two
+  identities being "equal" and two requests producing the same header value are the same
+  question. The TypeScript port already worked this way; this brings Kotlin's default in line
+  with it. `@ConsistentCopyVisibility` was added alongside the `internal` constructor (see below)
+  so the auto-generated `copy()` doesn't leak past it.
 
 ### Changed
 - Renamed from `kiit-call` to `kiit-identity`. Once `Verb`/`Version`/`Trace`/`Source`/`Content`
   moved out to `kiit-requests` (see Removed), everything left in this module was about a
   service's identity, not a call, so the name follows.
+- Redesigned `Identity` to align with kiit-codes' `Status` (`origin`/`scope`, `:`-delimited
+  accessors). `company`/`area`/`service` are replaced by `origin`/`scope` (a single free-form,
+  dot-structured field). `desc` is renamed `about`. A new optional `uri` field was added.
+  `name`/`fullName`/`id` are `:`-joined instead of `.`-joined, and a new `install` accessor sits
+  between `fullName` and `id` (`origin:scope:agent:env:version`); `idWithTags` is removed. Every
+  accessor except `instance` is lowercased. `Identity` now implements a new `IIdentity` interface
+  (a plain data contract, no derived accessors of its own) for consumers who want a custom shape.
+  `Agent`'s int `value` is dropped, `Svc` is renamed `Service`, and `Worker` is added. Since this
+  module isn't stable yet (pre-1.0, published but with no real consumers), this ships as a clean
+  break rather than a deprecation path.
+- `Identity`'s constructor is now `internal`; `Identity.of` (and the named shortcuts) is the only
+  public way to build one. `origin`/`scope` normalization can then only ever be skipped from
+  inside this module (e.g. in tests), never by an external consumer.
+- Repo layout flattened to match `kiit-result`: Gradle root files and the `kiit-identity` module
+  folder moved from `kiit-identity-kotlin/*` to the repo root (`kiit-identity-kotlin/` is gone).
+  Fixes IntelliJ misreading the project structure with a nested Gradle root, the same issue
+  `kiit-codes` hit before `kiit-result` was set up flat from the start.
 
 ### Removed
 - `Verb`/`Version`/`Trace`/`Source`/`Content`/`ContentType` moved to `kiit-requests`, which now
   owns the whole call-shape domain (`Request`/`ServerRequest`/`ClientRequest`).
 - `About` moved out too, a future `kiit-app` module's concern (whole-application description),
   a different granularity than `Identity`'s per-service/component scope. `kiit-identity` now
-  holds just `Identity` and `Agent`.
+  holds just `Identity` and `Agent`. (`Identity` later gained its own, much smaller `about: String`
+  field, see Changed, unrelated to the removed `About` type.)
