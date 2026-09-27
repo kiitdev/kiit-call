@@ -50,12 +50,13 @@ dependencies {
 
 ```kotlin
 import kiit.identity.Identity
+import kiit.identity.Tag
 
 val original = Identity.job("acme", "accounts.signup")
-val retried = original.with(inst = null, tags = listOf("retry"))
+val retried = original.with(inst = null, tags = listOf(Tag.Basic("retry")))
 
 println(original.tags)  // []
-println(retried.tags)   // [retry]
+println(retried.tags)   // [Basic(value=retry)]
 ```
 
 See [`samples/sample-kotlin`](./samples/sample-kotlin) for a runnable end-to-end example.
@@ -82,9 +83,12 @@ See [`samples/sample-kotlin`](./samples/sample-kotlin) for a runnable end-to-end
 | **`scope`** | Free-form, consumer-defined label for where in `origin` this lives, e.g. `"accounts.signup"`. Dots express hierarchy, same convention as `Status.scope`. |
 | **`Agent`** | What kind of runnable app or service has this identity: `App`, `CLI`, `Web`, `API`, `Bot`, `Job`, `Worker`, `Service`, `Test`. A closed set, a real enum, no runtime-extensible case. |
 | **`about`** | Short, human-readable description of what this is or does. Not part of any derived accessor. |
+| **`tags`** | Labels attached to this identity: `Tag.Basic("retry")` or `Tag.Keyed("region", "us-east-1")`. `Tag.parse("region=us-east-1")` splits on the first `=`. Not part of any derived accessor, and not normalized — a tag's value often needs preserving exactly as given (a trace id, a hash), not canonicalized the way `origin`/`scope` are. |
 | **`uri`** | Optional reference to this instance itself (a hostname, a service-discovery address). Unique per environment, not part of any derived accessor. |
 
 `IIdentity` is the plain data contract (all nine fields, no behavior) for anyone who wants a custom shape. `Identity` is the concrete, constructible implementation, and the only place `path`/`name`/`full`/`install`/`id` live — implementing `IIdentity` yourself doesn't get you those for free, on purpose. If you need them, build a real `Identity`.
+
+**Equality.** Two identities are equal when their `id` is equal, so `about`/`tags`/`uri` don't count — `equals`/`hashCode`/`toString` are all overridden to match, rather than relying on `data class`'s default (which would otherwise compare/print all nine fields). This mirrors how identity actually travels on the wire: a caller sends its `id` as a header (e.g. `x-client-id`), and a server treats two requests as the same caller exactly when that value matches, nothing more.
 
 `Identity.env` is a plain `String`, not a typed enum. kiit-identity has no dependency on the environment-selection module (`kiit-conf-envs`), since `Identity` is needed well beyond env-aware bootstrap code, so callers pass whatever env label they're already using.
 

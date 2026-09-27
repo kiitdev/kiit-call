@@ -21,7 +21,7 @@ gpg --import dev.kiit.seckey.asc
 gpg --list-secret-keys --keyid-format LONG
 ```
 
-> **Why this import step matters:** `kiit-identity-kotlin/kiit-identity/build.gradle.kts`'s
+> **Why this import step matters:** `kiit-identity/build.gradle.kts`'s
 > `signing { useGpgCmd() }` doesn't reference `dev.kiit.seckey.asc` (or any file) directly — it tells
 > Gradle's signing plugin to shell out to the external `gpg` binary on your `PATH` instead of using
 > its default in-memory PGP implementation. That external `gpg` process reads from your local
@@ -112,7 +112,7 @@ gpg --armor --export-secret-keys <your-key-id> | base64 | pbcopy
 Releases are **not** triggered by pushing a tag — `release.yml` creates the tag itself, from the
 version already in Gradle:
 
-1. Bump `libraryVersion` in [`kiit-identity-kotlin/kiit-identity/build.gradle.kts`](./kiit-identity-kotlin/kiit-identity/build.gradle.kts)
+1. Bump `libraryVersion` in [`kiit-identity/build.gradle.kts`](./kiit-identity/build.gradle.kts)
    (see the FAQ entry below) and merge that change to `main`.
 2. From the GitHub Actions tab, run the **Release** workflow (`workflow_dispatch`, no inputs).
 3. It reads the version via `./gradlew :kiit-identity:printVersion`, verifies a tag for that
@@ -263,7 +263,7 @@ The `mavenCentralUsername` and `mavenCentralPassword` are **portal token** crede
 ### How do I bump the version?
 
 Edit the `libraryVersion` val near the top of the `mavenPublishing {}` block in
-`kiit-identity-kotlin/kiit-identity/build.gradle.kts`:
+`kiit-identity/build.gradle.kts`:
 ```kotlin
 val libraryVersion = "0.1.0"   // ← bump here
 ```

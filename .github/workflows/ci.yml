@@ -13,9 +13,6 @@ concurrency:
 jobs:
   checks:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: kiit-identity-kotlin
     steps:
       - uses: actions/checkout@v4
 
@@ -36,9 +33,6 @@ jobs:
 
   ios-checks:
     runs-on: macos-latest
-    defaults:
-      run:
-        working-directory: kiit-identity-kotlin
     steps:
       - uses: actions/checkout@v4
 
