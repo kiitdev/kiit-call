@@ -61,14 +61,14 @@ class IdentityTest {
                 about = "Sends the welcome email after signup",
                 version = "1.4.2",
                 instance = "i-1",
-                tags = listOf("retry", "beta"),
+                tags = listOf(Tag.Basic("retry"), Tag.Keyed("region", "us-east-1")),
                 uri = "accounts-signup.acme.internal",
             )
 
         assertEquals("Sends the welcome email after signup", identity.about)
         assertEquals("1.4.2", identity.version)
         assertEquals("i-1", identity.instance)
-        assertEquals(listOf("retry", "beta"), identity.tags)
+        assertEquals(listOf(Tag.Basic("retry"), Tag.Keyed("region", "us-east-1")), identity.tags)
         assertEquals("accounts-signup.acme.internal", identity.uri)
     }
 
@@ -94,10 +94,10 @@ class IdentityTest {
     @Test
     fun withOverridesTheInstanceAndTags() {
         val original = Identity.of("app1", "accounts.signup", Agent.App)
-        val updated = original.with("fixed-instance", listOf("a", "b"))
+        val updated = original.with("fixed-instance", listOf(Tag.Basic("a"), Tag.Basic("b")))
 
         assertEquals("fixed-instance", updated.instance)
-        assertEquals(listOf("a", "b"), updated.tags)
+        assertEquals(listOf(Tag.Basic("a"), Tag.Basic("b")), updated.tags)
         assertTrue(updated.id.endsWith("fixed-instance"))
     }
 

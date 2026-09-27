@@ -2,6 +2,7 @@ package sample
 
 import kiit.identity.Agent
 import kiit.identity.Identity
+import kiit.identity.Tag
 
 /** Builds an Identity the way a service would at startup, then looks at each derived accessor. */
 fun identityExample() {
@@ -18,7 +19,7 @@ fun identityExample() {
 /** Identity is immutable. `newInstance`/`with` return a new value rather than mutating. */
 fun cloneExample() {
     val original = Identity.job("codehelix", "accounts.signup")
-    val tagged = original.with(inst = null, tags = listOf("retry", "batch-42"))
+    val tagged = original.with(inst = null, tags = listOf(Tag.Basic("retry"), Tag.Keyed("batch", "42")))
 
     println("original tags=${original.tags}")
     println("tagged tags=${tagged.tags}")

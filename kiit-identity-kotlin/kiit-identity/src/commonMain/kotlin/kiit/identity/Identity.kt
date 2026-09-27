@@ -65,8 +65,11 @@ interface IIdentity {
      */
     val instance: String
 
-    /** Freeform metadata, e.g. `listOf("retry", "beta")`. Not part of any derived identifier. */
-    val tags: List<String>
+    /**
+     * Labels attached to this identity, e.g. `listOf(Tag.Basic("retry"), Tag.Keyed("region", "us-east-1"))`.
+     * Not part of any derived identifier.
+     */
+    val tags: List<Tag>
 
     /**
      * Optional reference to this instance itself, e.g. `"accounts-signup.acme.internal"`. Unique
@@ -119,7 +122,7 @@ data class Identity internal constructor(
     override val about: String = "",
     override val version: String = "latest",
     override val instance: String = Uuid.random().toString(),
-    override val tags: List<String> = listOf(),
+    override val tags: List<Tag> = listOf(),
     override val uri: String? = null,
 ) : IIdentity {
     /** `origin:scope`, lowercased, e.g. `"acme:accounts.signup"`. */
@@ -150,7 +153,7 @@ data class Identity internal constructor(
     /** Same identity with the given instance id (random if null) and tags. */
     fun with(
         inst: String?,
-        tags: List<String>,
+        tags: List<Tag>,
     ): Identity {
         return this.copy(instance = inst ?: Uuid.random().toString(), tags = tags)
     }
@@ -201,7 +204,7 @@ data class Identity internal constructor(
             about: String? = null,
             version: String? = null,
             instance: String? = null,
-            tags: List<String>? = null,
+            tags: List<Tag>? = null,
             uri: String? = null,
         ): Identity {
             return Identity(
