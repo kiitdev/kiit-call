@@ -166,7 +166,7 @@ describe("Identity equality and string form", () => {
     const other = Identity.of({ origin: "c", scope: "s", agent: Agent.App, instance: "i-1", about: "different", uri: "x" });
 
     expect(base().equals(other)).toBe(true);
-    expect(base().equals(base().with("i-1", ["tagged"]))).toBe(true);
+    expect(base().equals(base().with("i-1", [Tag.Basic("tagged")]))).toBe(true);
   });
 
   it("is not equal across instances, env, version or agent", () => {

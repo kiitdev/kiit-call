@@ -20,10 +20,10 @@ function identityExample(): void {
 /** Identity is immutable. `newInstance`/`with` return a new value rather than mutating. */
 function cloneExample(): void {
   const original = Identity.job("codehelix", "accounts.signup");
-  const tagged = original.with(null, ["retry", "batch-42"]);
+  const tagged = original.with(null, [Tag.Basic("retry"), Tag.Keyed("batch", "42")]);
 
-  console.log(`original tags=[${original.tags.join(", ")}]`);
-  console.log(`tagged tags=[${tagged.tags.join(", ")}]`);
+  console.log(`original tags=[${original.tags.map((t) => t.raw).join(", ")}]`);
+  console.log(`tagged tags=[${tagged.tags.map((t) => t.raw).join(", ")}]`);
   console.log(`same instance? ${original.instance === tagged.instance}`);
   console.log(`equal? ${original.equals(tagged)}`);
 }
