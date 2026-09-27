@@ -52,6 +52,27 @@ class IdentityTest {
     }
 
     @Test
+    fun ofAcceptsAboutVersionInstanceTagsAndUri() {
+        val identity =
+            Identity.of(
+                "app1",
+                "accounts.signup",
+                Agent.Worker,
+                about = "Sends the welcome email after signup",
+                version = "1.4.2",
+                instance = "i-1",
+                tags = listOf("retry", "beta"),
+                uri = "accounts-signup.acme.internal",
+            )
+
+        assertEquals("Sends the welcome email after signup", identity.about)
+        assertEquals("1.4.2", identity.version)
+        assertEquals("i-1", identity.instance)
+        assertEquals(listOf("retry", "beta"), identity.tags)
+        assertEquals("accounts-signup.acme.internal", identity.uri)
+    }
+
+    @Test
     fun everyIdentityGetsAUniqueInstance() {
         val first = Identity.of("app1", "accounts.signup", Agent.App)
         val second = Identity.of("app1", "accounts.signup", Agent.App)
@@ -110,9 +131,9 @@ class IdentityTest {
     }
 
     // Same cases as ports/kiit-identity-ts/test/fixtures/to-ident-cases.json. Keep the two in sync
-    // by hand, they're what guards the TypeScript port's toIdent against drifting from this one.
+    // by hand, they're what guards the TypeScript port's normalize against drifting from this one.
     @Test
-    fun toIdentMatchesTheTypeScriptPortFixture() {
+    fun normalizeMatchesTheTypeScriptPortFixture() {
         val cases =
             listOf(
                 "My Company" to "my_company",
@@ -127,7 +148,7 @@ class IdentityTest {
                 "日本語 サービス" to "日本語_サービス",
             )
         for ((input, expected) in cases) {
-            assertEquals(expected, Identity.of(input, "s", Agent.App).origin, "toIdent(\"$input\")")
+            assertEquals(expected, Identity.of(input, "s", Agent.App).origin, "normalize(\"$input\")")
         }
     }
 }

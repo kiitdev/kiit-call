@@ -27,45 +27,50 @@ const val IDENTITY_DELIMITER = ":"
 interface IIdentity {
     /**
      * Domain-like label for who owns this identity, e.g. `"acme.com"` or `"acme"`.
-     * 1. Same convention as `Status.origin` in kiit-codes: a real domain or any other stable id
+     * 1. Same convention as `Status.origin` in kiit-codes: a real domain or any other stable id.
      * 2. This is not validated, and not guaranteed unique unless it's an actual domain.
      */
     val origin: String
 
     /**
-     * Free-form, consumer-defined label for where in [origin] this lives, e.g. "accounts.signup"
-     * 1. Same convention as `Status.scope`: dots are fine for expressing hierarchy
-     * 2. kiit-identity never parses or enforces the internal shape
+     * Free-form, consumer-defined label for where in [origin] this lives, e.g.
+     * `"accounts.signup"`.
+     * 1. Same convention as `Status.scope`: dots are fine for expressing hierarchy.
+     * 2. kiit-identity never parses or enforces the internal shape.
      * 3. This shouldn't contain `:` (reserved, see [IDENTITY_DELIMITER]).
      */
     val scope: String
 
-    /** The kind of runnable app or service this is. See [Agent]. */
+    /** The kind of runnable app or service this is, e.g. [Agent.API] for an HTTP service. */
     val agent: Agent
 
     /** dev | qat | pro, environment. A plain string, so callers pass whatever env label they already use. */
     val env: String
 
-    /** Short, human-readable description of what this is or does. Empty string means unset. */
+    /**
+     * Short, human-readable description of what this is or does, e.g.
+     * `"Sends the welcome email after signup"`. Empty string means unset.
+     */
     val about: String
 
-    /** The version running here. Defaults to `"latest"`. */
+    /** The version running here, e.g. `"1.4.2"`. Defaults to `"latest"`. */
     val version: String
 
     /**
      * Id of this specific running instance, for telling apart multiple instances of the same
-     * [version] (a redeploy, a pod, a worker in a pool). Random by default. Left as-is in
-     * [Identity.id], unlike every other field here: its whole job is uniqueness, and lowercasing
-     * it could make two different instances collide.
+     * [version] (a redeploy, a pod, a worker in a pool). Random by default, e.g.
+     * `"4a3b300b-d0ac-4776-8a9c-31aa75e412b3"`, or a caller-supplied id like `"pod-7f9c9d4b8-x2kq1"`.
+     * Left as-is in [Identity.id], unlike every other field here: its whole job is uniqueness, and
+     * lowercasing it could make two different instances collide.
      */
     val instance: String
 
-    /** Freeform metadata. Not part of any derived identifier. */
+    /** Freeform metadata, e.g. `listOf("retry", "beta")`. Not part of any derived identifier. */
     val tags: List<String>
 
     /**
-     * Optional reference to this instance itself, e.g. a hostname or service-discovery address.
-     * Unique per environment. Not part of any derived identifier.
+     * Optional reference to this instance itself, e.g. `"accounts-signup.acme.internal"`. Unique
+     * per environment. Not part of any derived identifier.
      */
     val uri: String?
 }
@@ -81,14 +86,32 @@ interface IIdentity {
  * id      = install:instance          = origin:scope:agent:env:version:instance
  * ```
  *
+ * For `Identity.api("acme", "accounts.signup", "qat")` with `version = "1.4.2"`:
+ * ```
+ * path    = acme:accounts.signup
+ * name    = acme:accounts.signup:api
+ * full    = acme:accounts.signup:api:qat
+ * install = acme:accounts.signup:api:qat:1.4.2
+ * id      = acme:accounts.signup:api:qat:1.4.2:4a3b300b-d0ac-4776-8a9c-31aa75e412b3
+ * ```
+ *
  * Every segment except [instance] is lowercased, so two identities that only differ by casing in
  * [origin]/[scope]/[agent]/[env]/[version] still produce the same [path]/[name]/[full]/[install]/
  * [id]. [instance] is left exactly as given, since folding its case could make two genuinely
  * different instances collide.
  *
  * Immutable. [newInstance]/[with] return a new [Identity] rather than mutating this one.
+ *
+ * The constructor is `internal`. [of] (and the named shortcuts below it) is the public way to
+ * build one, and it's the only place [origin]/[scope] get normalized, see [normalize].
+ * `@ConsistentCopyVisibility` makes the auto-generated `copy()` follow the constructor's
+ * visibility too (otherwise Kotlin still defaults `copy()` to public even with an internal
+ * constructor), so it's `internal` as well; it can still produce an un-normalized copy from
+ * within this module, an accepted, narrow gap rather than something worth giving up
+ * `data class` over.
  */
-data class Identity(
+@ConsistentCopyVisibility
+data class Identity internal constructor(
     override val origin: String,
     override val scope: String,
     override val agent: Agent,
@@ -99,23 +122,26 @@ data class Identity(
     override val tags: List<String> = listOf(),
     override val uri: String? = null,
 ) : IIdentity {
-    /** `origin:scope`, lowercased. */
+    /** `origin:scope`, lowercased, e.g. `"acme:accounts.signup"`. */
     val path: String get() = "${origin.lowercase()}$IDENTITY_DELIMITER${scope.lowercase()}"
 
-    /** [path] plus [agent], lowercased: `origin:scope:agent`. The same component, any environment. */
+    /** [path] plus [agent], lowercased, e.g. `"acme:accounts.signup:api"`. The same component, any environment. */
     val name: String get() = "$path$IDENTITY_DELIMITER${agent.name.lowercase()}"
 
-    /** [name] plus [env], lowercased: `origin:scope:agent:env`. */
+    /** [name] plus [env], lowercased, e.g. `"acme:accounts.signup:api:qat"`. */
     val full: String get() = "$name$IDENTITY_DELIMITER${env.lowercase()}"
 
     /**
-     * [full] plus [version], lowercased: `origin:scope:agent:env:version`. Named for what it is:
-     * a specific version installed into a specific environment.
+     * [full] plus [version], lowercased, e.g. `"acme:accounts.signup:api:qat:1.4.2"`. Named for
+     * what it is: a specific version installed into a specific environment.
      */
     val install: String get() = "$full$IDENTITY_DELIMITER${version.lowercase()}"
 
-    /** [install] plus [instance], not lowercased: `origin:scope:agent:env:version:instance`.
-     * Unique per running instance. */
+    /**
+     * [install] plus [instance], not lowercased, e.g.
+     * `"acme:accounts.signup:api:qat:1.4.2:4a3b300b-d0ac-4776-8a9c-31aa75e412b3"`. Unique per
+     * running instance.
+     */
     val id: String get() = "$install$IDENTITY_DELIMITER$instance"
 
     /** Same identity with a new random instance id. */
@@ -162,25 +188,31 @@ data class Identity(
             name: String,
         ): Identity = of(origin, "tests.$name", Agent.Test, "dev")
 
-        /** Builds an [Identity] from names, normalizing [origin]/[scope] and lowercasing [env]. */
+        /**
+         * Builds an [Identity] from names, normalizing [origin]/[scope] (see [normalize]) and
+         * lowercasing [env]. This is the public entry point: the constructor itself is
+         * `internal`, so this is the only way code outside this module builds an [Identity].
+         */
         fun of(
             origin: String,
             scope: String,
             agent: Agent,
             env: String = "dev",
-            version: String? = null,
             about: String? = null,
+            version: String? = null,
             instance: String? = null,
+            tags: List<String>? = null,
             uri: String? = null,
         ): Identity {
             return Identity(
-                origin.toIdent(),
-                scope.toIdent(),
+                origin.normalize(),
+                scope.normalize(),
                 agent,
                 env.lowercase(),
                 about = about ?: "",
                 version = version ?: "latest",
                 instance = instance ?: Uuid.random().toString(),
+                tags = tags ?: listOf(),
                 uri = uri,
             )
         }
@@ -189,10 +221,11 @@ data class Identity(
 
 /**
  * Normalizes a name into an identifier: lowercased, trimmed, keeping only letters, digits, `-`,
- * `_`, `.`, and space, with spaces turned into `_`. Falls back to `_` if nothing survives. Dots
+ * `_`, `.`, and space, with spaces turned into `_`. Falls back to `_` if nothing survives, e.g.
+ * `"My Company"` -> `"my_company"`, `"Accounts Team.Sign Up!"` -> `"accounts_team.sign_up"`. Dots
  * are kept so a [IIdentity.scope] like `"accounts.signup"` survives normalization intact.
  */
-internal fun String.toIdent(): String {
+internal fun String.normalize(): String {
     val trimmed = this.trim().lowercase()
     val filtered = trimmed.filter { it.isDigit() || it.isLetter() || it == '-' || it == '_' || it == '.' || it == ' ' }
     val cleaned = filtered.ifBlank { "_" }
