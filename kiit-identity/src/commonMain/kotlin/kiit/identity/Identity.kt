@@ -105,6 +105,13 @@ interface IIdentity {
  *
  * Immutable. [newInstance]/[with] return a new [Identity] rather than mutating this one.
  *
+ * Two identities are equal when their [id] is equal, so [about]/[tags]/[uri] don't count. This
+ * matches how identity actually travels on the wire: a caller sends its [id] as a header (e.g.
+ * `x-client-id`), and a server treats two requests as the same caller exactly when that value
+ * matches, nothing more. `equals`/`hashCode`/`toString` are overridden to match, rather than
+ * relying on the auto-generated `data class` versions, which would otherwise compare/print all
+ * nine fields.
+ *
  * The constructor is `internal`. [of] (and the named shortcuts below it) is the public way to
  * build one, and it's the only place [origin]/[scope] get normalized, see [normalize].
  * `@ConsistentCopyVisibility` makes the auto-generated `copy()` follow the constructor's
@@ -146,6 +153,15 @@ data class Identity internal constructor(
      * running instance.
      */
     val id: String get() = "$install$IDENTITY_DELIMITER$instance"
+
+    /** Equal when [id] is equal. See the class doc for why [about]/[tags]/[uri] don't count. */
+    override fun equals(other: Any?): Boolean = other is Identity && other.id == id
+
+    /** Matches [equals]: hashed on [id] alone. */
+    override fun hashCode(): Int = id.hashCode()
+
+    /** [id], so logging an [Identity] directly prints something useful instead of a field dump. */
+    override fun toString(): String = id
 
     /** Same identity with a new random instance id. */
     fun newInstance(): Identity = this.copy(instance = Uuid.random().toString())

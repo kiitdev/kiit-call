@@ -1,9 +1,13 @@
+/** "=" — the delimiter Tag.Keyed's `raw` and `Tag.parse` split on. */
+export const TAG_DELIMITER = "=";
+
 /**
  * A label attached to an Identity or a request: either a bare value or a key/value pair.
- * `Tag.parse` splits a raw string on its first "=", e.g. "retry" -> Tag.Basic, "region=us-east-1"
- * -> Tag.Keyed. "=" is used rather than IDENTITY_DELIMITER on purpose: a tag's own key/value
- * syntax is a different protocol from the accessor chain IDENTITY_DELIMITER builds, and sharing
- * one character between them would only invite confusion if either ever needs to change alone.
+ * `Tag.parse` splits a raw string on its first TAG_DELIMITER, e.g. "retry" -> Tag.Basic,
+ * "region=us-east-1" -> Tag.Keyed. TAG_DELIMITER is its own constant, distinct from
+ * IDENTITY_DELIMITER, on purpose: a tag's own key/value syntax is a different protocol from the
+ * accessor chain IDENTITY_DELIMITER builds, and sharing one character between them would only
+ * invite confusion if either ever needs to change alone.
  *
  * `kind` is a TypeScript-only addition, not present on Kotlin's `Tag`: Kotlin narrows with
  * `is Tag.Basic`/`is Tag.Keyed` against the sealed class hierarchy itself, which TypeScript has
@@ -36,12 +40,12 @@ export namespace Tag {
    * data class constructor call.
    */
   export function Keyed(key: string, value: string): Keyed {
-    return { kind: "Keyed", key, value, raw: `${key}=${value}` };
+    return { kind: "Keyed", key, value, raw: `${key}${TAG_DELIMITER}${value}` };
   }
 
-  /** Splits `raw` into a Basic or Keyed tag, only on its first "=". */
+  /** Splits `raw` into a Basic or Keyed tag, only on its first TAG_DELIMITER. */
   export function parse(raw: string): Tag {
-    const idx = raw.indexOf("=");
-    return idx < 0 ? Basic(raw) : Keyed(raw.slice(0, idx), raw.slice(idx + 1));
+    const idx = raw.indexOf(TAG_DELIMITER);
+    return idx < 0 ? Basic(raw) : Keyed(raw.slice(0, idx), raw.slice(idx + TAG_DELIMITER.length));
   }
 }

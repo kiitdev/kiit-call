@@ -130,6 +130,34 @@ class IdentityTest {
         assertEquals(":empty:test:empty:latest", Identity.empty.install)
     }
 
+    @Test
+    fun toStringIsTheId() {
+        val identity = Identity.of("c", "s", Agent.App, instance = "i-1")
+
+        assertEquals(identity.id, identity.toString())
+        assertEquals("c:s:app:dev:latest:i-1", identity.toString())
+    }
+
+    @Test
+    fun isEqualWhenTheIdIsEqualIgnoringTagsAboutAndUri() {
+        val base = Identity.of("c", "s", Agent.App, instance = "i-1")
+        val other = Identity.of("c", "s", Agent.App, instance = "i-1", about = "different", uri = "x")
+
+        assertEquals(base, other)
+        assertEquals(base.hashCode(), other.hashCode())
+        assertEquals(base, base.with("i-1", listOf(Tag.Basic("tagged"))))
+    }
+
+    @Test
+    fun isNotEqualAcrossInstancesEnvVersionOrAgent() {
+        val base = Identity.of("c", "s", Agent.App, instance = "i-1")
+
+        assertNotEquals(base, base.newInstance())
+        assertNotEquals(base, Identity.of("c", "s", Agent.App, instance = "i-1", env = "qat"))
+        assertNotEquals(base, Identity.of("c", "s", Agent.App, instance = "i-1", version = "2"))
+        assertNotEquals(base, Identity.of("c", "s", Agent.Job, instance = "i-1"))
+    }
+
     // Same cases as ports/kiit-identity-ts/test/fixtures/to-ident-cases.json. Keep the two in sync
     // by hand, they're what guards the TypeScript port's normalize against drifting from this one.
     @Test
