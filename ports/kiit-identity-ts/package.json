@@ -1,6 +1,6 @@
 {
   "name": "@kiitdev/identity",
-  "version": "0.0.1",
+  "version": "0.9.0",
   "description": "Who is making a call (Identity) and what kind of runnable thing they are (Agent)",
   "keywords": [
     "identity",
