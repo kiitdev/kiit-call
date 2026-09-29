@@ -1,5 +1,5 @@
 // Root aggregator, no dependencies of its own.
-// The library lives in :kiit-identity, demo apps live under :samples.
+// The library lives in :kiit-service-id, demo apps live under :samples.
 plugins {
     idea
     alias(libs.plugins.kotlin.jvm) apply false

@@ -33,15 +33,15 @@ kotlin {
 
     listOf(iosArm64(), iosSimulatorArm64(), iosX64()).forEach {
         it.binaries.framework {
-            baseName = "KiitIdentity"
+            baseName = "KiitServiceId"
             isStatic = true
         }
     }
 
     sourceSets {
         commonMain.dependencies {
-            // No dependencies. Identity/Agent have no date fields and nothing else that needs
-            // an external library, only kotlin.uuid.Uuid (stdlib) for Identity's instance
+            // No dependencies. ServiceId/Kind have no date fields and nothing else that needs
+            // an external library, only kotlin.uuid.Uuid (stdlib) for ServiceId's instance
             // default. Zero kiit dependencies too, same as kiit-codes.
         }
         commonTest.dependencies {
@@ -59,7 +59,7 @@ skie {
 }
 
 android {
-    namespace = "kiit.identity"
+    namespace = "kiit.serviceid"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
@@ -78,20 +78,20 @@ android {
  * signing.gnupg.keyName=
  * signing.gnupg.passphrase=
  *
- * Maven local: ~/.m2/repository/dev/kiit/kiit-identity/
+ * Maven local: ~/.m2/repository/dev/kiit/kiit-service-id/
  */
 mavenPublishing {
     publishToMavenCentral(automaticRelease = true)
 
     coordinates(
         groupId = "dev.kiit",
-        artifactId = "kiit-identity",
+        artifactId = "kiit-service-id",
         version = libraryVersion,
     )
     pom {
-        name = "kiit-identity"
+        name = "kiit-service-id"
         description = "Identity types for which service or running instance something is " +
-            "associated with - Kotlin Multiplatform."
+            "associated with, and a caller-safe way to expose them - Kotlin Multiplatform."
         url = "https://kiit.dev"
         licenses {
             license {
@@ -107,9 +107,9 @@ mavenPublishing {
             }
         }
         scm {
-            url = "https://github.com/kiitdev/kiit-identity"
-            connection = "scm:git:git://github.com/kiitdev/kiit-identity.git"
-            developerConnection = "scm:git:ssh://git@github.com/kiitdev/kiit-identity.git"
+            url = "https://github.com/kiitdev/kiit-service-id"
+            connection = "scm:git:git://github.com/kiitdev/kiit-service-id.git"
+            developerConnection = "scm:git:ssh://git@github.com/kiitdev/kiit-service-id.git"
         }
     }
 }

@@ -1,4 +1,4 @@
-# kiit-identity — Build & Publish Guide
+# kiit-service-id — Build & Publish Guide
 
 All Gradle commands below are run from the **repository root**.
 
@@ -22,7 +22,7 @@ gpg --import dev.kiit.seckey.asc
 gpg --list-secret-keys --keyid-format LONG
 ```
 
-> **Why this import step matters:** `kiit-identity/build.gradle.kts`'s
+> **Why this import step matters:** `kiit-service-id/build.gradle.kts`'s
 > `signing { useGpgCmd() }` doesn't reference `dev.kiit.seckey.asc` (or any file) directly — it tells
 > Gradle's signing plugin to shell out to the external `gpg` binary on your `PATH` instead of using
 > its default in-memory PGP implementation. That external `gpg` process reads from your local
@@ -54,7 +54,7 @@ signing.gnupg.passphrase=<passphrase>
 
 With this in place, publishing commands need no extra flags:
 ```bash
-./gradlew :kiit-identity:publishAndReleaseToMavenCentral
+./gradlew :kiit-service-id:publishAndReleaseToMavenCentral
 ```
 
 ### Option B — Shell environment variables (recommended for CI / scripted runs)
@@ -71,7 +71,7 @@ Export these variables in your shell profile (e.g. `~/.zshrc`) or in your CI sec
 Pass them as `-P` flags because dots in the property names are not valid bash variable names:
 
 ```bash
-./gradlew :kiit-identity:publishAndReleaseToMavenCentral \
+./gradlew :kiit-service-id:publishAndReleaseToMavenCentral \
     -Psigning.gnupg.keyName=$KIIT_MAVEN_GPGNAME \
     -Psigning.gnupg.passphrase=$KIIT_MAVEN_GPGPASS \
     -PmavenCentralUsername=$KIIT_MAVEN_USER \
@@ -120,10 +120,10 @@ gpg --armor --export-secret-keys <your-key-id> | base64 | pbcopy
 Releases are **not** triggered by pushing a tag — `release.yml` creates the tag itself, from the
 version already in Gradle:
 
-1. Bump `libraryVersion` in [`kiit-identity/build.gradle.kts`](./kiit-identity/build.gradle.kts)
+1. Bump `libraryVersion` in [`kiit-service-id/build.gradle.kts`](./kiit-service-id/build.gradle.kts)
    (see the FAQ entry below) and merge that change to `main`.
 2. From the GitHub Actions tab, run the **Release** workflow (`workflow_dispatch`, no inputs).
-3. It reads the version via `./gradlew :kiit-identity:printVersion`, verifies a tag for that
+3. It reads the version via `./gradlew :kiit-service-id:printVersion`, verifies a tag for that
    version doesn't already exist, runs the same lint/test gate as CI, publishes to Maven Central,
    then pushes tag `v<version>` and creates a GitHub release with auto-generated notes
    (`gh release create --generate-notes`) covering everything since the previous release.
@@ -165,19 +165,19 @@ Gradle itself already passes `--batch --pinentry-mode loopback` automatically wh
 ./gradlew --stop
 
 # Clean build outputs
-./gradlew :kiit-identity:clean
+./gradlew :kiit-service-id:clean
 
 # Compile all targets (JVM, Android, iOS)
-./gradlew :kiit-identity:build
+./gradlew :kiit-service-id:build
 
 # Compile only — no tests
-./gradlew :kiit-identity:assemble
+./gradlew :kiit-service-id:assemble
 
 # Run the Kotlin sample app
 ./gradlew :samples:sample-kotlin:run
 
 # Run the Swift sample app (macOS only, needs Xcode + an iOS Simulator runtime)
-./gradlew :kiit-identity:linkDebugFrameworkIosSimulatorArm64
+./gradlew :kiit-service-id:linkDebugFrameworkIosSimulatorArm64
 cd samples/sample-swift && ./run.sh
 ```
 
@@ -187,18 +187,18 @@ cd samples/sample-swift && ./run.sh
 
 ```bash
 # JVM tests (fastest — runs on the local JVM)
-./gradlew :kiit-identity:jvmTest
+./gradlew :kiit-service-id:jvmTest
 
 # All platform tests
-./gradlew :kiit-identity:allTests
+./gradlew :kiit-service-id:allTests
 
 # Publish to Maven Local (~/.m2) for integration testing against other modules
-./gradlew :kiit-identity:publishToMavenLocal
+./gradlew :kiit-service-id:publishToMavenLocal
 ```
 
 Maven Local artifacts are saved to:
 ```
-~/.m2/repository/dev/kiit/kiit-identity/
+~/.m2/repository/dev/kiit/kiit-service-id/
 ```
 
 ---
@@ -206,14 +206,14 @@ Maven Local artifacts are saved to:
 ## Publish
 
 Published artifacts (once a version has actually gone through `publishAndReleaseToMavenCentral`):
-[central.sonatype.com/artifact/dev.kiit/kiit-identity](https://central.sonatype.com/artifact/dev.kiit/kiit-identity)
+[central.sonatype.com/artifact/dev.kiit/kiit-service-id](https://central.sonatype.com/artifact/dev.kiit/kiit-service-id)
 
 ### Publish to Maven Local
 
 No credentials required.
 
 ```bash
-./gradlew :kiit-identity:publishToMavenLocal
+./gradlew :kiit-service-id:publishToMavenLocal
 ```
 
 ### Publish to Maven Central — Option A (gradle.properties)
@@ -221,13 +221,13 @@ No credentials required.
 Requires `~/.gradle/gradle.properties` populated per the Setup section above.
 
 ```bash
-./gradlew :kiit-identity:publishAndReleaseToMavenCentral
+./gradlew :kiit-service-id:publishAndReleaseToMavenCentral
 ```
 
 ### Publish to Maven Central — Option B (env vars)
 
 ```bash
-./gradlew :kiit-identity:publishAndReleaseToMavenCentral \
+./gradlew :kiit-service-id:publishAndReleaseToMavenCentral \
     -Psigning.gnupg.keyName=$KIIT_MAVEN_GPGNAME \
     -Psigning.gnupg.passphrase=$KIIT_MAVEN_GPGPASS \
     -PmavenCentralUsername=$KIIT_MAVEN_USER \
@@ -237,7 +237,7 @@ Requires `~/.gradle/gradle.properties` populated per the Setup section above.
 ### Sign artifacts only (dry-run check)
 
 ```bash
-./gradlew :kiit-identity:signKotlinMultiplatformPublication
+./gradlew :kiit-service-id:signKotlinMultiplatformPublication
 ```
 
 ---
@@ -306,7 +306,7 @@ The `mavenCentralUsername` and `mavenCentralPassword` are **portal token** crede
 ### How do I bump the version?
 
 Edit the `libraryVersion` val near the top of the `mavenPublishing {}` block in
-`kiit-identity/build.gradle.kts`:
+`kiit-service-id/build.gradle.kts`:
 ```kotlin
 val libraryVersion = "0.9.0"   // ← bump here
 ```

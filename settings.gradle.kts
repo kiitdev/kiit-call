@@ -19,8 +19,8 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "kiit-identity"
+rootProject.name = "kiit-service-id"
 
-include(":kiit-identity")
+include(":kiit-service-id")
 include(":samples:sample-kotlin")
 include(":samples:sample-java")
