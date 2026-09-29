@@ -2,34 +2,35 @@
 export const TAG_DELIMITER = "=";
 
 /**
- * A label attached to an Identity or a request: either a bare value or a key/value pair.
+ * A label attached to a ServiceId or a request: either a bare value or a key/value pair.
  * `Tag.parse` splits a raw string on its first TAG_DELIMITER, e.g. "retry" -> Tag.Basic,
  * "region=us-east-1" -> Tag.Keyed. TAG_DELIMITER is its own constant, distinct from
- * IDENTITY_DELIMITER, on purpose: a tag's own key/value syntax is a different protocol from the
- * accessor chain IDENTITY_DELIMITER builds, and sharing one character between them would only
+ * SERVICE_ID_DELIMITER, on purpose: a tag's own key/value syntax is a different protocol from the
+ * accessor chain SERVICE_ID_DELIMITER builds, and sharing one character between them would only
  * invite confusion if either ever needs to change alone.
  *
- * `kind` is a TypeScript-only addition, not present on Kotlin's `Tag`: Kotlin narrows with
+ * `variant` is a TypeScript-only addition, not present on Kotlin's `Tag`: Kotlin narrows with
  * `is Tag.Basic`/`is Tag.Keyed` against the sealed class hierarchy itself, which TypeScript has
- * no equivalent for over plain object literals, so `kind` is the discriminant a `switch` narrows
- * on instead.
+ * no equivalent for over plain object literals, so `variant` is the discriminant a `switch`
+ * narrows on instead. Named `variant`, not `kind`, so it doesn't collide with `ServiceId`'s own
+ * `kind` field — a completely different classification — within the same package.
  */
 export type Tag = Tag.Basic | Tag.Keyed;
 
 export namespace Tag {
   export interface Basic {
-    readonly kind: "Basic";
+    readonly variant: "Basic";
     readonly value: string;
     readonly raw: string;
   }
 
   /** `Tag.Basic("retry")`, mirroring Kotlin's `Tag.Basic("retry")` data class constructor call. */
   export function Basic(value: string): Basic {
-    return { kind: "Basic", value, raw: value };
+    return { variant: "Basic", value, raw: value };
   }
 
   export interface Keyed {
-    readonly kind: "Keyed";
+    readonly variant: "Keyed";
     readonly key: string;
     readonly value: string;
     readonly raw: string;
@@ -40,7 +41,7 @@ export namespace Tag {
    * data class constructor call.
    */
   export function Keyed(key: string, value: string): Keyed {
-    return { kind: "Keyed", key, value, raw: `${key}${TAG_DELIMITER}${value}` };
+    return { variant: "Keyed", key, value, raw: `${key}${TAG_DELIMITER}${value}` };
   }
 
   /** Splits `raw` into a Basic or Keyed tag, only on its first TAG_DELIMITER. */

@@ -1,25 +1,26 @@
 /**
- * Mirrors samples/sample-kotlin: build an Identity the way a service would at startup, then show
+ * Mirrors samples/sample-kotlin: build a ServiceId the way a service would at startup, then show
  * each derived accessor and that the type is immutable. Type-checked against the native port with
  * `npm run typecheck`.
  */
-import { Agent, Identity, Tag } from "@kiitdev/identity";
+import { Criticality, Kind, ServiceId, Tag } from "@kiitdev/identity";
 
-/** Builds an Identity the way a service would at startup, then looks at each derived accessor. */
-function identityExample(): void {
-  const identity = Identity.api("codehelix", "accounts.signup", "qat");
+/** Builds a ServiceId the way a service would at startup, then looks at each derived accessor. */
+function serviceIdExample(): void {
+  const id = ServiceId.api("codehelix", "accounts.signup", "qat");
 
-  console.log(`path=${identity.path}`);
-  console.log(`name=${identity.name}`);
-  console.log(`fullName=${identity.fullName}`);
-  console.log(`install=${identity.install}`);
-  console.log(`id=${identity.id}`);
-  console.log(`agent=${identity.agent}`);
+  console.log(`path=${id.path}`);
+  console.log(`name=${id.name}`);
+  console.log(`fullName=${id.fullName}`);
+  console.log(`install=${id.install}`);
+  console.log(`privateId=${id.privateId}`);
+  console.log(`externalId=${id.externalId}`);
+  console.log(`kind=${id.kind}`);
 }
 
-/** Identity is immutable. `newInstance`/`with` return a new value rather than mutating. */
+/** ServiceId is immutable. `newInstance`/`with` return a new value rather than mutating. */
 function cloneExample(): void {
-  const original = Identity.job("codehelix", "accounts.signup");
+  const original = ServiceId.job("codehelix", "accounts.signup");
   const tagged = original.with(null, [Tag.Basic("retry"), Tag.Keyed("batch", "42")]);
 
   console.log(`original tags=[${original.tags.map((t) => t.raw).join(", ")}]`);
@@ -30,21 +31,26 @@ function cloneExample(): void {
 
 /** Every option `of` takes, including the ones the shortcuts (`api`, `job`, ...) leave out. */
 function ofExample(): void {
-  const identity = Identity.of({
+  const id = ServiceId.of({
     origin: "Code Helix",
     scope: "Accounts Team.Sign Up!",
-    agent: Agent.Worker,
+    kind: Kind.Worker,
     env: "PRO",
     version: "1.0.2",
     about: "Sends the welcome email after signup",
     uri: "worker-7.codehelix.internal",
+    criticality: Criticality.High,
+    team: "payments-platform",
   });
 
-  console.log(`fullName=${identity.fullName}`);
-  console.log(`about=${identity.about}`);
-  console.log(`uri=${identity.uri}`);
+  console.log(`fullName=${id.fullName}`);
+  console.log(`about=${id.about}`);
+  console.log(`uri=${id.uri}`);
+  console.log(`criticality=${id.criticality}`);
+  console.log(`team=${id.team}`);
+  console.log(`provenance=${id.provenance}`);
 }
 
-identityExample();
+serviceIdExample();
 cloneExample();
 ofExample();

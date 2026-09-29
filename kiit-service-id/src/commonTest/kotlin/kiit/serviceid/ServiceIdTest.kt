@@ -114,6 +114,17 @@ class ServiceIdTest {
     }
 
     @Test
+    fun newInstanceAndWithPreserveProvenance() {
+        // copy() preserves every field not explicitly overridden, provenance included — this is
+        // just how data class copy() behaves, no special handling needed on the Kotlin side
+        // (unlike the TS port, which has to thread this through by hand).
+        val original = ServiceId.of("c", "s", Kind.App)
+
+        assertEquals(Provenance.Declared, original.newInstance().provenance)
+        assertEquals(Provenance.Declared, original.with("i-2", listOf()).provenance)
+    }
+
+    @Test
     fun everyServiceIdGetsAUniqueInstance() {
         val first = ServiceId.of("app1", "accounts.signup", Kind.App)
         val second = ServiceId.of("app1", "accounts.signup", Kind.App)
