@@ -13,7 +13,7 @@ All Gradle commands below are run from the **repository root**.
 | JDK  | 17+     | `java -version` to verify |
 | Android SDK | any | Required for `androidTarget` compilation |
 | GPG  | 2.x     | `gpg --version`; must have the dev.kiit secret key imported |
-| Node / npm | 24+ | Needed for `ports/kiit-identity-ts`, `scripts/publish-npm.sh`, and `samples/sample-ts` — not for the Kotlin build itself |
+| Node / npm | 24+ | Needed for `ports/kiit-service-id-ts`, `scripts/publish-npm.sh`, and `samples/sample-ts` — not for the Kotlin build itself |
 
 Import the signing key if not already present:
 ```bash
@@ -88,7 +88,7 @@ Three workflows live under [`.github/workflows`](.github/workflows):
 |----------|------|---------|---------------|
 | CI | `ci.yml` | Every PR into `main` | `ktlintCheck`, `detekt`, `jvmTest` on `ubuntu-latest`; iOS simulator tests on `macos-latest`. |
 | Release | `release.yml` | Manual (`workflow_dispatch`) | Builds, tests, publishes to Maven Central, tags, and cuts a GitHub release. Runs on `macos-latest` — required to build/sign the iOS targets. |
-| Release npm | `release-npm.yml` | Manual (`workflow_dispatch`) | Builds, tests, publishes `@kiitdev/identity` to npm, tags, and cuts a GitHub release. Independent version/cadence from the Kotlin release above. |
+| Release npm | `release-npm.yml` | Manual (`workflow_dispatch`) | Builds, tests, publishes `@kiitdev/service-id` to npm, tags, and cuts a GitHub release. Independent version/cadence from the Kotlin release above. |
 
 CI runners are ephemeral — there is no persistent GPG keyring. The secret key must be imported at the start of every release run.
 
@@ -113,7 +113,7 @@ gpg --armor --export-secret-keys <your-key-id> | base64 | pbcopy
 
 | Secret name      | Value |
 |------------------|-------|
-| `KIIT_NPM_TOKEN` | An npm [automation token](https://docs.npmjs.com/creating-and-viewing-access-tokens) with publish access to `@kiitdev/identity` |
+| `KIIT_NPM_TOKEN` | An npm [automation token](https://docs.npmjs.com/creating-and-viewing-access-tokens) with publish access to `@kiitdev/service-id` |
 
 ### 2. Cutting a release
 
@@ -242,13 +242,13 @@ Requires `~/.gradle/gradle.properties` populated per the Setup section above.
 
 ---
 
-## Publish — npm (`@kiitdev/identity`)
+## Publish — npm (`@kiitdev/service-id`)
 
-Published artifacts: [npmjs.com/package/@kiitdev/identity](https://www.npmjs.com/package/@kiitdev/identity)
+Published artifacts: [npmjs.com/package/@kiitdev/service-id](https://www.npmjs.com/package/@kiitdev/service-id)
 
-`@kiitdev/identity` is published from the native TypeScript port (`ports/kiit-identity-ts`), not
+`@kiitdev/service-id` is published from the native TypeScript port (`ports/kiit-service-id-ts`), not
 generated from the Kotlin build — it has its own version, tracked in
-`ports/kiit-identity-ts/package.json`, independent of the Kotlin library's `libraryVersion`.
+`ports/kiit-service-id-ts/package.json`, independent of the Kotlin library's `libraryVersion`.
 
 ### Manual, local publish
 
@@ -259,12 +259,12 @@ npm login          # one-time, if not already authenticated
 
 The script installs dependencies, runs `typecheck`/`test`/`build`, previews exactly what would be
 published via `npm pack --dry-run`, asks for confirmation, then runs `npm publish --access public`
-from `ports/kiit-identity-ts` — the `--access public` flag is required the first time a new scoped
+from `ports/kiit-service-id-ts` — the `--access public` flag is required the first time a new scoped
 (`@kiit/...`) package is published, since scoped packages default to private on npm otherwise.
 
 ### CI, via the Release npm workflow
 
-1. Bump `version` in [`ports/kiit-identity-ts/package.json`](ports/kiit-identity-ts/package.json)
+1. Bump `version` in [`ports/kiit-service-id-ts/package.json`](ports/kiit-service-id-ts/package.json)
    and merge that change to `main`.
 2. From the GitHub Actions tab, run the **Release npm** workflow (`workflow_dispatch`, no inputs).
 3. It reads the version from `package.json`, verifies a tag for that version doesn't already
@@ -311,5 +311,5 @@ Edit the `libraryVersion` val near the top of the `mavenPublishing {}` block in
 val libraryVersion = "0.9.0"   // ← bump here
 ```
 This single value feeds both the published Maven coordinates and the `printVersion` task the release workflow reads to tag and name the GitHub release — see [CI — GitHub Actions](#ci--github-actions) above. The npm package's version is tracked separately, in
-[`ports/kiit-identity-ts/package.json`](ports/kiit-identity-ts/package.json) (see the npm publish
+[`ports/kiit-service-id-ts/package.json`](ports/kiit-service-id-ts/package.json) (see the npm publish
 section above).

@@ -1,8 +1,9 @@
 {
-  "name": "@kiitdev/identity",
+  "name": "@kiitdev/service-id",
   "version": "0.9.0",
-  "description": "Who is making a call (Identity) and what kind of runnable thing they are (Agent)",
+  "description": "Who is making a call (ServiceId), what kind of runnable thing they are (Kind), and a caller-safe way to expose it",
   "keywords": [
+    "service-id",
     "identity",
     "service",
     "typescript",
@@ -24,11 +25,11 @@
   "homepage": "https://kiit.dev",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kiitdev/kiit-identity.git",
-    "directory": "ports/kiit-identity-ts"
+    "url": "git+https://github.com/kiitdev/kiit-service-id.git",
+    "directory": "ports/kiit-service-id-ts"
   },
   "bugs": {
-    "url": "https://github.com/kiitdev/kiit-identity/issues"
+    "url": "https://github.com/kiitdev/kiit-service-id/issues"
   },
   "author": "CodeHelix <https://kiit.dev>",
   "engines": {

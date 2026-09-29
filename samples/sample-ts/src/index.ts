@@ -3,7 +3,7 @@
  * each derived accessor and that the type is immutable. Type-checked against the native port with
  * `npm run typecheck`.
  */
-import { Criticality, Kind, ServiceId, Tag } from "@kiitdev/identity";
+import { Criticality, Kind, ServiceId, Tag } from "@kiitdev/service-id";
 
 /** Builds a ServiceId the way a service would at startup, then looks at each derived accessor. */
 function serviceIdExample(): void {

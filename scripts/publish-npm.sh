@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Publishes @kiitdev/identity to npm from the native TypeScript port (ports/kiit-identity-ts). Run
-# from the repository root:
+# Publishes @kiitdev/service-id to npm from the native TypeScript port (ports/kiit-service-id-ts).
+# Run from the repository root:
 #
 #   npm login          # one-time, if not already authenticated
 #   ./scripts/publish-npm.sh
 
-cd "$(dirname "$0")/../ports/kiit-identity-ts"
+cd "$(dirname "$0")/../ports/kiit-service-id-ts"
 
 echo "==> Installing dependencies"
 npm ci

@@ -214,7 +214,7 @@ class ServiceIdTest {
         assertNotEquals(base, ServiceId.of("c", "s", Kind.Job, instance = "i-1"))
     }
 
-    // Same cases as ports/kiit-identity-ts/test/fixtures/to-ident-cases.json. Keep the two in sync
+    // Same cases as ports/kiit-service-id-ts/test/fixtures/to-ident-cases.json. Keep the two in sync
     // by hand, they're what guards the TypeScript port's normalize against drifting from this one.
     @Test
     fun normalizeMatchesTheTypeScriptPortFixture() {
