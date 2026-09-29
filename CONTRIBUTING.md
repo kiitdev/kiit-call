@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for your interest in kiit-identity.
+Thanks for your interest in kiit-service-id.
 
 ## Where things stand right now
 
