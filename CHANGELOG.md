@@ -62,7 +62,9 @@ All notable changes to kiit-service-id are documented here. Format follows
   touched at all) and validates `instance`, throwing if it contains the delimiter instead of
   silently accepting it. An unsanitized `:` in any of these three fields would otherwise produce
   a derived string with more segments than the chain assumes — a real correctness bug, not a
-  style nit, and one that a future `parse()` implementation would depend on not existing.
+  style nit, and one that a future `parse()` implementation would depend on not existing. `with`
+  got the same `instance` validation — it was the one public method that could still bypass `of`'s
+  check, since it calls the constructor directly rather than going through `of`.
 - Repo layout flattened to match `kiit-result`: Gradle root files and the module folder moved
   from a nested `-kotlin/` folder to the repo root. Fixes IntelliJ misreading the project
   structure with a nested Gradle root, the same issue `kiit-codes` hit before `kiit-result` was

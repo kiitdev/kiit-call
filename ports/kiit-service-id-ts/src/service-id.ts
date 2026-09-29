@@ -249,9 +249,17 @@ export class ServiceId implements IServiceId {
     return new ServiceId({ ...this, instance: randomUuid() });
   }
 
-  /** Same identity with the given instance id (random if null/undefined) and tags. */
+  /**
+   * Same identity with the given instance id (random if null/undefined) and tags.
+   *
+   * @throws {Error} if `inst` contains SERVICE_ID_DELIMITER.
+   */
   with(inst: string | null | undefined, tags: readonly Tag[]): ServiceId {
-    return new ServiceId({ ...this, instance: inst ?? randomUuid(), tags });
+    const resolvedInstance = inst ?? randomUuid();
+    if (resolvedInstance.includes(SERVICE_ID_DELIMITER)) {
+      throw new Error(`instance must not contain '${SERVICE_ID_DELIMITER}': ${resolvedInstance}`);
+    }
+    return new ServiceId({ ...this, instance: resolvedInstance, tags });
   }
 
   equals(other: IServiceId): boolean {

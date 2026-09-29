@@ -209,12 +209,20 @@ data class ServiceId internal constructor(
     /** Same identity with a new random instance id. */
     fun newInstance(): ServiceId = this.copy(instance = Uuid.random().toString())
 
-    /** Same identity with the given instance id (random if null) and tags. */
+    /**
+     * Same identity with the given instance id (random if null) and tags.
+     *
+     * @throws IllegalArgumentException if [inst] contains [SERVICE_ID_DELIMITER].
+     */
     fun with(
         inst: String?,
         tags: List<Tag>,
     ): ServiceId {
-        return this.copy(instance = inst ?: Uuid.random().toString(), tags = tags)
+        val resolvedInstance = inst ?: Uuid.random().toString()
+        require(!resolvedInstance.contains(SERVICE_ID_DELIMITER)) {
+            "instance must not contain '$SERVICE_ID_DELIMITER': $resolvedInstance"
+        }
+        return this.copy(instance = resolvedInstance, tags = tags)
     }
 
     companion object {

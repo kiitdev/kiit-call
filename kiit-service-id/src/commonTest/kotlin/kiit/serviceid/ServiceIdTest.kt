@@ -67,6 +67,15 @@ class ServiceIdTest {
     }
 
     @Test
+    fun withRejectsAnInstanceContainingTheDelimiter() {
+        val id = ServiceId.of("acme", "checkout", Kind.API)
+
+        assertFailsWith<IllegalArgumentException> {
+            id.with("pod:1", listOf())
+        }
+    }
+
+    @Test
     fun defaultsVersionToLatestAndEnvToDev() {
         val id = ServiceId.of("app1", "accounts.signup", Kind.App)
 

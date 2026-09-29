@@ -119,6 +119,12 @@ describe("normalize (through ServiceId.of)", () => {
 });
 
 describe("ServiceId copies", () => {
+  it("with rejects an instance containing the delimiter", () => {
+    const id = ServiceId.of({ origin: "acme", scope: "checkout", kind: Kind.API });
+
+    expect(() => id.with("pod:1", [])).toThrow();
+  });
+
   it("newInstance keeps everything else but changes the instance", () => {
     const original = ServiceId.of({ origin: "app1", scope: "accounts.signup", kind: Kind.App });
     const renewed = original.newInstance();
