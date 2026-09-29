@@ -233,17 +233,17 @@ describe("ServiceId.parse", () => {
     const original = ServiceId.of({ origin: "acme", scope: "accounts.signup", kind: Kind.API, env: "qat", version: "1.4.2", instance: "i-1" });
     const parsed = ServiceId.parse(original.privateId);
 
-    expect(parsed?.origin).toBe(original.origin);
-    expect(parsed?.scope).toBe(original.scope);
-    expect(parsed?.kind).toBe(original.kind);
-    expect(parsed?.env).toBe(original.env);
-    expect(parsed?.version).toBe(original.version);
-    expect(parsed?.instance).toBe(original.instance);
-    expect(parsed?.privateId).toBe(original.privateId);
+    expect(parsed.origin).toBe(original.origin);
+    expect(parsed.scope).toBe(original.scope);
+    expect(parsed.kind).toBe(original.kind);
+    expect(parsed.env).toBe(original.env);
+    expect(parsed.version).toBe(original.version);
+    expect(parsed.instance).toBe(original.instance);
+    expect(parsed.privateId).toBe(original.privateId);
   });
 
   it("marks a parsed identity as Parsed, not Declared", () => {
-    expect(ServiceId.parse("acme:accounts.signup:api:qat:1.4.2:i-1")?.provenance).toBe(Provenance.Parsed);
+    expect(ServiceId.parse("acme:accounts.signup:api:qat:1.4.2:i-1").provenance).toBe(Provenance.Parsed);
   });
 
   it("does not recover side fields", () => {
@@ -252,21 +252,21 @@ describe("ServiceId.parse", () => {
     const original = ServiceId.of({ origin: "acme", scope: "s", kind: Kind.API, about: "hello", criticality: Criticality.Critical });
     const parsed = ServiceId.parse(original.privateId);
 
-    expect(parsed?.about).toBe("");
-    expect(parsed?.criticality).toBe(Criticality.Unspecified);
+    expect(parsed.about).toBe("");
+    expect(parsed.criticality).toBe(Criticality.Unspecified);
   });
 
   it("rejects the wrong segment count", () => {
-    expect(ServiceId.parse("acme:s:api:qat:1.0")).toBeNull();
-    expect(ServiceId.parse("acme:s:api:qat:1.0:i-1:extra")).toBeNull();
-    expect(ServiceId.parse("")).toBeNull();
+    expect(() => ServiceId.parse("acme:s:api:qat:1.0")).toThrow();
+    expect(() => ServiceId.parse("acme:s:api:qat:1.0:i-1:extra")).toThrow();
+    expect(() => ServiceId.parse("")).toThrow();
   });
 
   it("rejects an unrecognized kind", () => {
-    expect(ServiceId.parse("acme:s:not-a-kind:qat:1.0:i-1")).toBeNull();
+    expect(() => ServiceId.parse("acme:s:not-a-kind:qat:1.0:i-1")).toThrow();
   });
 
   it("rejects a blank segment", () => {
-    expect(ServiceId.parse("acme::api:qat:1.0:i-1")).toBeNull();
+    expect(() => ServiceId.parse("acme::api:qat:1.0:i-1")).toThrow();
   });
 });

@@ -250,20 +250,20 @@ class ServiceIdTest {
         val original = ServiceId.of("acme", "accounts.signup", Kind.API, env = "qat", version = "1.4.2", instance = "i-1")
         val parsed = ServiceId.parse(original.privateId)
 
-        assertEquals(original.origin, parsed?.origin)
-        assertEquals(original.scope, parsed?.scope)
-        assertEquals(original.kind, parsed?.kind)
-        assertEquals(original.env, parsed?.env)
-        assertEquals(original.version, parsed?.version)
-        assertEquals(original.instance, parsed?.instance)
-        assertEquals(original.privateId, parsed?.privateId)
+        assertEquals(original.origin, parsed.origin)
+        assertEquals(original.scope, parsed.scope)
+        assertEquals(original.kind, parsed.kind)
+        assertEquals(original.env, parsed.env)
+        assertEquals(original.version, parsed.version)
+        assertEquals(original.instance, parsed.instance)
+        assertEquals(original.privateId, parsed.privateId)
     }
 
     @Test
     fun parsedIdentityIsParsedProvenanceNotDeclared() {
         val id = ServiceId.parse("acme:accounts.signup:api:qat:1.4.2:i-1")
 
-        assertEquals(Provenance.Parsed, id?.provenance)
+        assertEquals(Provenance.Parsed, id.provenance)
     }
 
     @Test
@@ -273,24 +273,24 @@ class ServiceIdTest {
         val original = ServiceId.of("acme", "s", Kind.API, about = "hello", criticality = Criticality.Critical)
         val parsed = ServiceId.parse(original.privateId)
 
-        assertEquals("", parsed?.about)
-        assertEquals(Criticality.Unspecified, parsed?.criticality)
+        assertEquals("", parsed.about)
+        assertEquals(Criticality.Unspecified, parsed.criticality)
     }
 
     @Test
     fun parseRejectsTheWrongSegmentCount() {
-        assertEquals(null, ServiceId.parse("acme:s:api:qat:1.0"))
-        assertEquals(null, ServiceId.parse("acme:s:api:qat:1.0:i-1:extra"))
-        assertEquals(null, ServiceId.parse(""))
+        assertFailsWith<IllegalArgumentException> { ServiceId.parse("acme:s:api:qat:1.0") }
+        assertFailsWith<IllegalArgumentException> { ServiceId.parse("acme:s:api:qat:1.0:i-1:extra") }
+        assertFailsWith<IllegalArgumentException> { ServiceId.parse("") }
     }
 
     @Test
     fun parseRejectsAnUnrecognizedKind() {
-        assertEquals(null, ServiceId.parse("acme:s:not-a-kind:qat:1.0:i-1"))
+        assertFailsWith<IllegalArgumentException> { ServiceId.parse("acme:s:not-a-kind:qat:1.0:i-1") }
     }
 
     @Test
     fun parseRejectsABlankSegment() {
-        assertEquals(null, ServiceId.parse("acme::api:qat:1.0:i-1"))
+        assertFailsWith<IllegalArgumentException> { ServiceId.parse("acme::api:qat:1.0:i-1") }
     }
 }

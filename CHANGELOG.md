@@ -28,11 +28,18 @@ All notable changes to kiit-service-id are documented here. Format follows
   resource attribute (confirmed Alpha stability in the OTel semantic conventions registry).
 - `team`: the team or group that owns this service, distinct from `origin` (the owning company).
 - `Provenance` (`Declared`/`Parsed`): how a `ServiceId` instance came to exist — built locally via
-  `of`, or (once a future `parse()` exists) reconstructed from a propagated string. `of` never
-  exposes this as a parameter, so every identity it builds is `Declared` by construction;
-  `newInstance`/`with` preserve the original's `provenance` rather than resetting it, matching
-  Kotlin's `copy()` semantics (the TS port needed an explicit internal-only constructor type to
-  get this right, since it doesn't have `copy()`'s built-in field-preservation for free).
+  `of`, or reconstructed from a propagated string via `parse`. `of` never exposes this as a
+  parameter, so every identity it builds is `Declared` by construction; `newInstance`/`with`
+  preserve the original's `provenance` rather than resetting it, matching Kotlin's `copy()`
+  semantics (the TS port needed an explicit internal-only constructor type to get this right,
+  since it doesn't have `copy()`'s built-in field-preservation for free).
+- `ServiceId.parse(raw)`: reconstructs the six chain fields (`origin`/`scope`/`kind`/`env`/
+  `version`/`instance`) from a `privateId` string, e.g. a `caller-id` header value. Strict — only
+  the full 6-segment form is accepted, and it throws (`IllegalArgumentException` in Kotlin, `Error`
+  in TS) naming exactly what was wrong (segment count, an unrecognized `Kind`, or a blank segment)
+  rather than returning null, matching `of`/`with`'s style of rejecting bad input outright.
+  `about`/`tags`/`uri`/`criticality`/`team` weren't part of `privateId`, so a parsed identity gets
+  their defaults; `provenance` is `Parsed`.
 - A `## Security: internal use only` section in both READMEs, placed right after Quick Start.
   `privateId` carries real operational detail (exact version, environment, instance) and is
   internal-only; forwarding it outside your trust boundary — including calls made *from* a
