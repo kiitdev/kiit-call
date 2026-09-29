@@ -1,11 +1,11 @@
-package kiit.identity
+package kiit.serviceid
 
 /**
- * The kind of runnable/executable app or service an [Identity] represents. A closed, fixed set,
+ * The kind of runnable/executable app or service a [ServiceId] represents. A closed, fixed set,
  * not open for extension, so a real `enum class` rather than a sealed hierarchy: there's no
  * runtime-supplied "other" case to support here.
  */
-enum class Agent {
+enum class Kind {
     App,
     CLI,
     Web,
