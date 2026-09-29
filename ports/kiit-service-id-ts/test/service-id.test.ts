@@ -227,3 +227,46 @@ describe("ServiceId equality and string form", () => {
     expect(base().equals(ServiceId.of({ origin: "c", scope: "s", kind: Kind.Job, instance: "i-1" }))).toBe(false);
   });
 });
+
+describe("ServiceId.parse", () => {
+  it("reconstructs the chain fields from privateId", () => {
+    const original = ServiceId.of({ origin: "acme", scope: "accounts.signup", kind: Kind.API, env: "qat", version: "1.4.2", instance: "i-1" });
+    const parsed = ServiceId.parse(original.privateId);
+
+    expect(parsed?.origin).toBe(original.origin);
+    expect(parsed?.scope).toBe(original.scope);
+    expect(parsed?.kind).toBe(original.kind);
+    expect(parsed?.env).toBe(original.env);
+    expect(parsed?.version).toBe(original.version);
+    expect(parsed?.instance).toBe(original.instance);
+    expect(parsed?.privateId).toBe(original.privateId);
+  });
+
+  it("marks a parsed identity as Parsed, not Declared", () => {
+    expect(ServiceId.parse("acme:accounts.signup:api:qat:1.4.2:i-1")?.provenance).toBe(Provenance.Parsed);
+  });
+
+  it("does not recover side fields", () => {
+    // about/tags/uri/criticality/team were never part of privateId, so a parsed identity gets
+    // their defaults, not the original's actual values.
+    const original = ServiceId.of({ origin: "acme", scope: "s", kind: Kind.API, about: "hello", criticality: Criticality.Critical });
+    const parsed = ServiceId.parse(original.privateId);
+
+    expect(parsed?.about).toBe("");
+    expect(parsed?.criticality).toBe(Criticality.Unspecified);
+  });
+
+  it("rejects the wrong segment count", () => {
+    expect(ServiceId.parse("acme:s:api:qat:1.0")).toBeNull();
+    expect(ServiceId.parse("acme:s:api:qat:1.0:i-1:extra")).toBeNull();
+    expect(ServiceId.parse("")).toBeNull();
+  });
+
+  it("rejects an unrecognized kind", () => {
+    expect(ServiceId.parse("acme:s:not-a-kind:qat:1.0:i-1")).toBeNull();
+  });
+
+  it("rejects a blank segment", () => {
+    expect(ServiceId.parse("acme::api:qat:1.0:i-1")).toBeNull();
+  });
+});

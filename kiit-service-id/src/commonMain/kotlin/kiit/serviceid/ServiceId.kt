@@ -303,6 +303,39 @@ data class ServiceId internal constructor(
                 team = team ?: "",
             )
         }
+
+        /**
+         * Reconstructs a [ServiceId] from a [privateId] string. Strict: only the full 6-segment
+         * form is accepted; returns `null` on a wrong segment count, an unrecognized [Kind], or a
+         * blank segment. Only the six chain fields come back — [about]/[tags]/[uri]/
+         * [criticality]/[team] weren't part of [privateId] and get their defaults. [provenance]
+         * is [Provenance.Parsed].
+         */
+        fun parse(raw: String): ServiceId? {
+            val segments = raw.split(SERVICE_ID_DELIMITER)
+            if (segments.size != 6) return null
+
+            val origin = segments[0]
+            val scope = segments[1]
+            val kindSegment = segments[2]
+            val env = segments[3]
+            val version = segments[4]
+            val instance = segments[5]
+            if (origin.isBlank() || scope.isBlank() || env.isBlank() || version.isBlank() || instance.isBlank()) {
+                return null
+            }
+
+            val kind = Kind.entries.firstOrNull { it.name.lowercase() == kindSegment } ?: return null
+            return ServiceId(
+                origin,
+                scope,
+                kind,
+                env,
+                version = version,
+                instance = instance,
+                provenance = Provenance.Parsed,
+            )
+        }
     }
 }
 

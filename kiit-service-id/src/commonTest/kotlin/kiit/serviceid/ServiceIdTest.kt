@@ -244,4 +244,53 @@ class ServiceIdTest {
             assertEquals(expected, ServiceId.of(input, "s", Kind.App).origin, "normalize(\"$input\")")
         }
     }
+
+    @Test
+    fun parseReconstructsTheChainFieldsFromPrivateId() {
+        val original = ServiceId.of("acme", "accounts.signup", Kind.API, env = "qat", version = "1.4.2", instance = "i-1")
+        val parsed = ServiceId.parse(original.privateId)
+
+        assertEquals(original.origin, parsed?.origin)
+        assertEquals(original.scope, parsed?.scope)
+        assertEquals(original.kind, parsed?.kind)
+        assertEquals(original.env, parsed?.env)
+        assertEquals(original.version, parsed?.version)
+        assertEquals(original.instance, parsed?.instance)
+        assertEquals(original.privateId, parsed?.privateId)
+    }
+
+    @Test
+    fun parsedIdentityIsParsedProvenanceNotDeclared() {
+        val id = ServiceId.parse("acme:accounts.signup:api:qat:1.4.2:i-1")
+
+        assertEquals(Provenance.Parsed, id?.provenance)
+    }
+
+    @Test
+    fun parseDoesNotRecoverSideFields() {
+        // about/tags/uri/criticality/team were never part of privateId, so a parsed identity gets
+        // their defaults, not the original's actual values.
+        val original = ServiceId.of("acme", "s", Kind.API, about = "hello", criticality = Criticality.Critical)
+        val parsed = ServiceId.parse(original.privateId)
+
+        assertEquals("", parsed?.about)
+        assertEquals(Criticality.Unspecified, parsed?.criticality)
+    }
+
+    @Test
+    fun parseRejectsTheWrongSegmentCount() {
+        assertEquals(null, ServiceId.parse("acme:s:api:qat:1.0"))
+        assertEquals(null, ServiceId.parse("acme:s:api:qat:1.0:i-1:extra"))
+        assertEquals(null, ServiceId.parse(""))
+    }
+
+    @Test
+    fun parseRejectsAnUnrecognizedKind() {
+        assertEquals(null, ServiceId.parse("acme:s:not-a-kind:qat:1.0:i-1"))
+    }
+
+    @Test
+    fun parseRejectsABlankSegment() {
+        assertEquals(null, ServiceId.parse("acme::api:qat:1.0:i-1"))
+    }
 }

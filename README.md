@@ -109,13 +109,19 @@ This isn't enforced by the library. It's a convention, and the responsibility fo
 | **`uri`** | Optional reference to this instance itself (a hostname, a service-discovery address). Unique per environment, not part of any derived accessor. |
 | **`criticality`** | How much it matters if this fails or becomes unavailable: `Unspecified` (default), `Low`, `Medium`, `High`, `Critical`. Mirrors OpenTelemetry's `service.criticality` resource attribute (Alpha stability). Not part of any derived accessor. |
 | **`team`** | The team or group that owns this service, e.g. `"payments-platform"`. Distinct from `origin` (the owning company) — this says who *inside* it is responsible. Not part of any derived accessor. |
-| **`provenance`** | How this instance came to exist: `Declared` (built via `of`) or `Parsed` (reconstructed from a propagated string — a future capability, not yet available). Not part of any derived accessor. |
+| **`provenance`** | How this instance came to exist: `Declared` (built via `of`) or `Parsed` (reconstructed via `parse` from a propagated string, e.g. a header value). Not part of any derived accessor. |
 
 `IServiceId` is the plain data contract (all fields, no behavior) for anyone who wants a custom shape. `ServiceId` is the concrete, constructible implementation, and the only place `path`/`name`/`fullName`/`install`/`privateId`/`externalId` live — implementing `IServiceId` yourself doesn't get you those for free, on purpose. If you need them, build a real `ServiceId`.
 
 **Equality.** Two identities are equal when their `privateId` is equal, so `about`/`tags`/`uri`/`criticality`/`team`/`provenance` don't count — `equals`/`hashCode`/`toString` are all overridden to match, rather than relying on `data class`'s default (which would otherwise compare/print every field). This mirrors how identity actually travels on the wire: a caller sends its `privateId` as a header (e.g. `caller-id`), and a server treats two requests as the same caller exactly when that value matches, nothing more.
 
 `ServiceId.env` is a plain `String`, not a typed enum. kiit-service-id has no dependency on the environment-selection module (`kiit-conf-envs`), since `ServiceId` is needed well beyond env-aware bootstrap code, so callers pass whatever env label they're already using.
+
+**Parsing.** `ServiceId.parse(raw)` reconstructs an identity from a `privateId` string (e.g. a `caller-id` header value), or returns `null` if it isn't well-formed. Only the six chain fields come back; `about`/`tags`/`uri`/`criticality`/`team` get their defaults, and `provenance` is `Parsed`.
+
+```kotlin
+val id = ServiceId.parse(request.header("caller-id"))  // ServiceId?
+```
 
 ## Usage
 

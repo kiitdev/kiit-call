@@ -117,7 +117,13 @@ How much it matters if the thing this `ServiceId` describes fails or becomes una
 
 ## Provenance
 
-How a `ServiceId` instance came to exist: `Declared` (built via `ServiceId.of`) or `Parsed` (reconstructed from a propagated string, e.g. a header value — a future capability, not yet available). Says nothing about whether the underlying values are truthful — a `Parsed` identity is honestly labeled as unauthenticated, not verified as accurate. `ServiceId.of` never exposes this as an option, so every identity built through it is `Declared` by construction.
+How a `ServiceId` instance came to exist: `Declared` (built via `ServiceId.of`) or `Parsed` (reconstructed via `ServiceId.parse`). Says nothing about whether the underlying values are truthful — a `Parsed` identity is honestly labeled as unauthenticated, not verified as accurate. `ServiceId.of` never exposes this as an option, so every identity built through it is `Declared` by construction.
+
+**Parsing.** `ServiceId.parse(raw)` reconstructs an identity from a `privateId` string (e.g. a `caller-id` header value), or returns `null` if it isn't well-formed. Only the six chain fields come back; `about`/`tags`/`uri`/`criticality`/`team` get their defaults, and `provenance` is `Parsed`.
+
+```ts
+const id = ServiceId.parse(request.headers["caller-id"]); // ServiceId | null
+```
 
 ## Tag
 

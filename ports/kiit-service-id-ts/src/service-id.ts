@@ -320,6 +320,27 @@ export class ServiceId implements IServiceId {
       instance: resolvedInstance,
     });
   }
+
+  /**
+   * Reconstructs a ServiceId from a privateId string. Strict: only the full 6-segment form is
+   * accepted; returns null on a wrong segment count, an unrecognized Kind, or a blank segment.
+   * Only the six chain fields come back — about/tags/uri/criticality/team weren't part of
+   * privateId and get their defaults. `provenance` is Provenance.Parsed.
+   */
+  static parse(raw: string): ServiceId | null {
+    const segments = raw.split(SERVICE_ID_DELIMITER);
+    if (segments.length !== 6) return null;
+
+    const [origin, scope, kindSegment, env, version, instance] = segments as [
+      string, string, string, string, string, string,
+    ];
+    if (![origin, scope, env, version, instance].every((s) => s.trim() !== "")) return null;
+
+    const kind = (Object.values(Kind) as string[]).find((k) => k.toLowerCase() === kindSegment) as Kind | undefined;
+    if (kind === undefined) return null;
+
+    return new ServiceId({ origin, scope, kind, env, version, instance, provenance: Provenance.Parsed });
+  }
 }
 
 /**
