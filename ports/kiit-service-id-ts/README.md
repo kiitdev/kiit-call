@@ -101,10 +101,10 @@ const id = ServiceId.of({
 
 ```ts
 const original = ServiceId.job("acme", "accounts.signup");
-const retried = original.with(null, [Tag.Basic("retry")]); // null: generate a new instance id
+const tagged = original.with(null, [Tag.Keyed("region", "us-east-1")]); // null: generate a new instance id
 
 original.tags;  // []
-retried.tags;   // [{ variant: "Basic", value: "retry", raw: "retry" }]
+tagged.tags;    // [{ variant: "Keyed", key: "region", value: "us-east-1", raw: "region=us-east-1" }]
 ```
 
 ## Kind
