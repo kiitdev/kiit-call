@@ -1,10 +1,10 @@
 # sample-ts
 
-Sample app for [`@kiitdev/identity`](../../ports/kiit-identity-ts). Mirrors `samples/sample-kotlin`.
+Sample app for [`@kiitdev/service-id`](../../ports/kiit-service-id-ts). Mirrors `samples/sample-kotlin`.
 
 ## Run
 
-Build the port once first (`npm install && npm run build` in `ports/kiit-identity-ts`), since the sample imports its compiled output.
+Build the port once first (`npm install && npm run build` in `ports/kiit-service-id-ts`), since the sample imports its compiled output.
 
 ```bash
 npm install

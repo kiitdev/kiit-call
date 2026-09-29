@@ -16,7 +16,7 @@ export function randomUuid(): string {
   // getRandomValues. Fail loudly rather than fall back to a non-cryptographic random source,
   // since a predictable instance id defeats the point of it being random.
   if (typeof c?.getRandomValues !== "function") {
-    throw new Error("kiit-identity needs the Web Crypto API (globalThis.crypto) to create an instance id");
+    throw new Error("kiit-service-id needs the Web Crypto API (globalThis.crypto) to create an instance id");
   }
 
   // randomUUID is missing but getRandomValues isn't: a browser page on plain HTTP. Build the v4

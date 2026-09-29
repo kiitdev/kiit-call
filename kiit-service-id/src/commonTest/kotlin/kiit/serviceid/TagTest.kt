@@ -1,4 +1,4 @@
-package kiit.identity
+package kiit.serviceid
 
 import kotlin.test.Test
 import kotlin.test.assertEquals

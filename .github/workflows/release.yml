@@ -30,7 +30,7 @@ jobs:
 
       - name: Read version from Gradle
         id: version
-        run: echo "value=$(./gradlew :kiit-identity:printVersion -q)" >> "$GITHUB_OUTPUT"
+        run: echo "value=$(./gradlew :kiit-service-id:printVersion -q)" >> "$GITHUB_OUTPUT"
 
       - name: Verify tag does not already exist
         run: |
@@ -41,7 +41,7 @@ jobs:
 
       - name: Verification checks (lint + tests)
         run: |
-          ./gradlew :kiit-identity:ktlintCheck :kiit-identity:detekt :kiit-identity:jvmTest
+          ./gradlew :kiit-service-id:ktlintCheck :kiit-service-id:detekt :kiit-service-id:jvmTest
 
       - name: Import GPG key
         run: |
@@ -56,7 +56,7 @@ jobs:
 
       - name: Publish to Maven Central
         run: |
-          ./gradlew :kiit-identity:publishAndReleaseToMavenCentral \
+          ./gradlew :kiit-service-id:publishAndReleaseToMavenCentral \
             -Psigning.gnupg.keyName=${{ secrets.KIIT_MAVEN_GPGNAME }} \
             -Psigning.gnupg.passphrase=${{ secrets.KIIT_MAVEN_GPGPASS }} \
             -PmavenCentralUsername=${{ secrets.KIIT_MAVEN_USER }} \
